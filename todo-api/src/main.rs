@@ -1,4 +1,10 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, web, App, HttpServer, Responder};
+use diesel::{
+    r2d2::{self, ConnectionManager},
+    SqliteConnection,
+};
+use dotenv::dotenv;
+use std::env;
 
 #[get("/")]
 async fn get() -> impl Responder {
@@ -22,8 +28,17 @@ async fn update() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
-        App::new().service(
+    dotenv().ok();
+
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let manager = ConnectionManager::<SqliteConnection>::new(database_url);
+    // コネクションプールを作る
+    let pool = r2d2::Pool::builder()
+        .build(manager)
+        .expect("Failed to create pool.");
+
+    HttpServer::new(move || {
+        App::new().data(pool.clone()).service(
             web::scope("/todos")
                 .service(get)
                 .service(create)
