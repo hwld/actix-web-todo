@@ -1,14 +1,29 @@
-use actix_web::{get, post, web, App, HttpServer, Responder};
-use diesel::{
-    r2d2::{self, ConnectionManager},
-    SqliteConnection,
-};
+#[macro_use]
+extern crate diesel;
+
+use actix_web::{get, post, web, App, Error, HttpResponse, HttpServer, Responder};
+use diesel::{r2d2::ConnectionManager, SqliteConnection};
 use dotenv::dotenv;
 use std::env;
 
+mod actions;
+mod models;
+mod schema;
+
+type DbPool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
+
 #[get("/")]
-async fn get() -> impl Responder {
-    "all todos"
+async fn get(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
+    let connection = pool.get().expect("couldn't get db connection from pool");
+
+    let todos = web::block(move || actions::get_all_todos(&connection))
+        .await
+        .map_err(|e| {
+            eprintln!("{}", e);
+            HttpResponse::InternalServerError().finish()
+        })?;
+
+    Ok(HttpResponse::Ok().json(todos))
 }
 
 #[get("/create")]
