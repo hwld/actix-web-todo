@@ -26,9 +26,18 @@ async fn get(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
     Ok(HttpResponse::Ok().json(todos))
 }
 
-#[get("/create")]
-async fn create() -> impl Responder {
-    "create"
+#[post("/create")]
+async fn create(pool: web::Data<DbPool>, new_todo: web::Json<models::NewTodo>) -> Result<HttpResponse, Error> {
+    let connection = pool.get().expect("couldn't get db connection from pool");
+
+    let todo = web::block(move || actions::insert_new_todo(&new_todo.title, &connection))
+        .await
+        .map_err(|e| {
+            eprintln!("{}", e);
+            HttpResponse::InternalServerError().finish()
+        })?;
+
+    Ok(HttpResponse::Ok().json(todo))
 }
 
 #[post("/delete")]
@@ -61,7 +70,7 @@ async fn main() -> std::io::Result<()> {
                 .service(update),
         )
     })
-    .bind("0.0.0.0:8080")?
+    .bind("127.0.0.1:8080")?
     .run()
     .await
 }
