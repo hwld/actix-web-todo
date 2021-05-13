@@ -1,7 +1,7 @@
 table! {
     todos (id) {
         id -> Text,
-        todo -> Text,
-        checked -> Bool,
+        title -> Text,
+        is_done -> Bool,
     }
 }
