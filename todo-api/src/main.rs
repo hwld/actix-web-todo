@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate diesel;
 
-use actix_web::{get, post, web, App, Error, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, web, App, Error, HttpResponse, HttpServer};
 use diesel::{r2d2::ConnectionManager, SqliteConnection};
 use dotenv::dotenv;
 use std::env;
@@ -27,10 +27,13 @@ async fn get(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
 }
 
 #[post("/create")]
-async fn create(pool: web::Data<DbPool>, new_todo: web::Json<models::AddTodo>) -> Result<HttpResponse, Error> {
+async fn create(
+    pool: web::Data<DbPool>,
+    form: web::Json<models::AddTodo>,
+) -> Result<HttpResponse, Error> {
     let connection = pool.get().expect("couldn't get db connection from pool");
 
-    let todo = web::block(move || actions::insert_new_todo(&new_todo.title, &connection))
+    let todo = web::block(move || actions::insert_new_todo(&form.title, &connection))
         .await
         .map_err(|e| {
             eprintln!("{}", e);
@@ -41,13 +44,32 @@ async fn create(pool: web::Data<DbPool>, new_todo: web::Json<models::AddTodo>) -
 }
 
 #[post("/delete")]
-async fn delete() -> impl Responder {
-    "delete"
+async fn delete(
+    pool: web::Data<DbPool>,
+    form: web::Json<models::DeleteTodo>,
+) -> Result<HttpResponse, Error> {
+    let connection = pool.get().expect("couldn't get db connection from pool");
+
+    web::block(move || actions::delete_todo(&form, &connection))
+        .await
+        .map_err(|e| {
+            eprintln!("{}", e);
+            HttpResponse::InternalServerError().finish()
+        })?;
+
+    Ok(HttpResponse::Ok().finish())
 }
 
 #[post("/update")]
-async fn update() -> impl Responder {
-    "update"
+async fn update(pool: web::Data<DbPool>, form: web::Json<models::UpdateTodo>) -> Result<HttpResponse, Error> {
+    let connection = pool.get().expect("couldn't get db connection from pool");
+
+    web::block(move || actions::update_todo(&form, &connection)).await.map_err(|e| {
+        eprintln!("{}", e);
+        HttpResponse::InternalServerError().finish()
+    })?;
+
+    Ok(HttpResponse::Ok().finish())
 }
 
 #[actix_web::main]

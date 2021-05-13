@@ -1,4 +1,5 @@
-use diesel::{RunQueryDsl, SqliteConnection};
+use diesel::ExpressionMethods;
+use diesel::{QueryDsl, RunQueryDsl, SqliteConnection};
 use uuid::Uuid;
 
 use crate::models;
@@ -28,4 +29,28 @@ pub fn insert_new_todo(
         .execute(connection)?;
 
     Ok(new_todo)
+}
+
+pub fn delete_todo(
+    todo: &models::DeleteTodo,
+    connection: &SqliteConnection,
+) -> Result<(), diesel::result::Error> {
+    use crate::schema::todos::dsl::*;
+
+    diesel::delete(todos.filter(id.eq(&todo.id))).execute(connection)?;
+
+    Ok(())
+}
+
+pub fn update_todo(
+    todo: &models::UpdateTodo,
+    connection: &SqliteConnection,
+) -> Result<(), diesel::result::Error> {
+    use crate::schema::todos::dsl::*;
+
+    diesel::update(todos.filter(id.eq(&todo.id)))
+        .set(is_done.eq(todo.is_done))
+        .execute(connection)?;
+
+    Ok(())
 }

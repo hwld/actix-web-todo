@@ -13,3 +13,14 @@ pub struct Todo {
 pub struct AddTodo {
     pub title: String,
 }
+
+#[derive(Debug, Deserialize)]
+pub struct DeleteTodo {
+    pub id: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateTodo {
+    pub id: String,
+    pub is_done: bool,
+}
