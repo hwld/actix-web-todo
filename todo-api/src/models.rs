@@ -9,7 +9,7 @@ pub struct Todo {
     pub is_done: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct NewTodo {
+#[derive(Debug, Deserialize)]
+pub struct AddTodo {
     pub title: String,
 }

@@ -27,7 +27,7 @@ async fn get(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
 }
 
 #[post("/create")]
-async fn create(pool: web::Data<DbPool>, new_todo: web::Json<models::NewTodo>) -> Result<HttpResponse, Error> {
+async fn create(pool: web::Data<DbPool>, new_todo: web::Json<models::AddTodo>) -> Result<HttpResponse, Error> {
     let connection = pool.get().expect("couldn't get db connection from pool");
 
     let todo = web::block(move || actions::insert_new_todo(&new_todo.title, &connection))
