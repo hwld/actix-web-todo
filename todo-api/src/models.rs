@@ -10,7 +10,7 @@ pub struct Todo {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct AddTodo {
+pub struct CreateTodo {
     pub title: String,
 }
 

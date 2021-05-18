@@ -29,7 +29,7 @@ async fn get(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
 #[post("/create")]
 async fn create(
     pool: web::Data<DbPool>,
-    form: web::Json<models::AddTodo>,
+    form: web::Json<models::CreateTodo>,
 ) -> Result<HttpResponse, Error> {
     let connection = pool.get().expect("couldn't get db connection from pool");
 
