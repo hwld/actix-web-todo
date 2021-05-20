@@ -8,8 +8,13 @@ type Props = {
   iconWidth?: string;
 };
 
-const Component: React.FC<Omit<CheckboxProps, keyof Props>> = (props) => {
-  return <Checkbox {...props} />;
+const Component: React.FC<Omit<CheckboxProps, keyof Props> & Props> = (
+  props
+) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { iconWidth, ...rest } = props;
+
+  return <Checkbox {...rest} />;
 };
 
 export const TodoCheckBox = styled(Component)<Props>`

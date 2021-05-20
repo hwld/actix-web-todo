@@ -24,6 +24,7 @@ const Home: NextPage = () => {
       <VStack my={{ base: 6, lg: 12 }} spacing={6} align="center">
         {todos.map((todo) => (
           <TodoItem
+            key={todo.id}
             bg="gray.600"
             w={{ base: "95%", lg: "60%" }}
             borderRadius="10px"

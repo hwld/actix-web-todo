@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate diesel;
 
+use actix_cors::Cors;
 use actix_web::{get, post, web, App, Error, HttpResponse, HttpServer};
 use diesel::{r2d2::ConnectionManager, SqliteConnection};
 use dotenv::dotenv;
@@ -61,13 +62,18 @@ async fn delete(
 }
 
 #[post("/update")]
-async fn update(pool: web::Data<DbPool>, form: web::Json<models::UpdateTodo>) -> Result<HttpResponse, Error> {
+async fn update(
+    pool: web::Data<DbPool>,
+    form: web::Json<models::UpdateTodo>,
+) -> Result<HttpResponse, Error> {
     let connection = pool.get().expect("couldn't get db connection from pool");
 
-    web::block(move || actions::update_todo(&form, &connection)).await.map_err(|e| {
-        eprintln!("{}", e);
-        HttpResponse::InternalServerError().finish()
-    })?;
+    web::block(move || actions::update_todo(&form, &connection))
+        .await
+        .map_err(|e| {
+            eprintln!("{}", e);
+            HttpResponse::InternalServerError().finish()
+        })?;
 
     Ok(HttpResponse::Ok().finish())
 }
@@ -84,7 +90,12 @@ async fn main() -> std::io::Result<()> {
         .expect("Failed to create pool.");
 
     HttpServer::new(move || {
-        App::new().data(pool.clone()).service(
+        let cors = Cors::default()
+            .allow_any_origin()
+            .allowed_methods(vec!["GET", "POST"])
+            .max_age(3600);
+
+        App::new().wrap(cors).data(pool.clone()).service(
             web::scope("/todos")
                 .service(get)
                 .service(create)
