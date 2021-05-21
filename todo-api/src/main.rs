@@ -2,7 +2,7 @@
 extern crate diesel;
 
 use actix_cors::Cors;
-use actix_web::{get, post, web, App, Error, HttpResponse, HttpServer};
+use actix_web::{App, Error, HttpResponse, HttpServer, get, http, post, web};
 use diesel::{r2d2::ConnectionManager, SqliteConnection};
 use dotenv::dotenv;
 use std::env;
@@ -89,10 +89,12 @@ async fn main() -> std::io::Result<()> {
         .build(manager)
         .expect("Failed to create pool.");
 
+    let allowed_origin = env::var("ALLOWED_ORIGIN").expect("ALLOWED_ORIGIN must be set");
     HttpServer::new(move || {
         let cors = Cors::default()
-            .allow_any_origin()
+            .allowed_origin(&allowed_origin)
             .allowed_methods(vec!["GET", "POST"])
+            .allowed_header(http::header::CONTENT_TYPE)
             .max_age(3600);
 
         App::new().wrap(cors).data(pool.clone()).service(

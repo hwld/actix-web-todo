@@ -3,14 +3,14 @@ const API_SERVER = process.env.NEXT_PUBLIC_API_SERVER;
 export type Todo = {
   id: string;
   title: string;
-  is_done: boolean;
+  isDone: boolean;
 };
 
-type CreateTodoRequest = Pick<Todo, "title">;
+export type CreateTodoRequest = Pick<Todo, "title">;
 
-type DeleteTodoRequest = Pick<Todo, "id">;
+export type DeleteTodoRequest = Pick<Todo, "id">;
 
-type UpdateTodoRequest = Pick<Todo, "id" | "is_done">;
+export type UpdateTodoRequest = Pick<Todo, "id" | "isDone">;
 
 const getAll = async (): Promise<Todo[]> => {
   const res = await fetch(`${API_SERVER}/todos/`);

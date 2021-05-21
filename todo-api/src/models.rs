@@ -6,6 +6,7 @@ use crate::schema::todos;
 pub struct Todo {
     pub id: String,
     pub title: String,
+    #[serde(rename(serialize = "isDone", deserialize = "isDone"))]
     pub is_done: bool,
 }
 
@@ -22,5 +23,6 @@ pub struct DeleteTodo {
 #[derive(Debug, Deserialize)]
 pub struct UpdateTodo {
     pub id: String,
+    #[serde(rename(deserialize = "isDone"))]
     pub is_done: bool,
 }
