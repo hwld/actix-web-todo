@@ -42,6 +42,14 @@ pub fn delete_todo(
     Ok(())
 }
 
+pub fn delete_all_todo(connection: &SqliteConnection) -> Result<(), diesel::result::Error> {
+    use crate::schema::todos::dsl::*;
+
+    diesel::delete(todos).execute(connection)?;
+
+    Ok(())
+}
+
 pub fn update_todo(
     todo: &models::UpdateTodo,
     connection: &SqliteConnection,

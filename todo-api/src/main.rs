@@ -2,7 +2,7 @@
 extern crate diesel;
 
 use actix_cors::Cors;
-use actix_web::{App, Error, HttpResponse, HttpServer, get, http, post, web};
+use actix_web::{get, http, post, web, App, Error, HttpResponse, HttpServer};
 use diesel::{r2d2::ConnectionManager, SqliteConnection};
 use dotenv::dotenv;
 use std::env;
@@ -61,6 +61,20 @@ async fn delete(
     Ok(HttpResponse::Ok().finish())
 }
 
+#[post("/delete-all")]
+async fn delete_all(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
+    let connection = pool.get().expect("couldn't get db connection from pool");
+
+    web::block(move || actions::delete_all_todo(&connection))
+        .await
+        .map_err(|e| {
+            eprintln!("{}", e);
+            HttpResponse::InternalServerError().finish()
+        })?;
+
+    Ok(HttpResponse::Ok().finish())
+}
+
 #[post("/update")]
 async fn update(
     pool: web::Data<DbPool>,
@@ -102,6 +116,7 @@ async fn main() -> std::io::Result<()> {
                 .service(get)
                 .service(create)
                 .service(delete)
+                .service(delete_all)
                 .service(update),
         )
     })
