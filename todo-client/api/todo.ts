@@ -14,6 +14,11 @@ export type UpdateTodoRequest = Pick<Todo, "id" | "isDone">;
 
 const getAll = async (): Promise<Todo[]> => {
   const res = await fetch(`${API_SERVER}/todos/`);
+
+  if (!res.ok) {
+    throw new Error("Todoを読み込むことができませんでした。");
+  }
+
   const data = await res.json();
 
   return data as Todo[];
@@ -27,8 +32,12 @@ const create = async (req: CreateTodoRequest): Promise<Todo> => {
     },
     body: JSON.stringify(req),
   });
-  const data = await res.json();
 
+  if (!res.ok) {
+    throw new Error("Todoを作成することができませんでした。");
+  }
+
+  const data = await res.json();
   return data as Todo;
 };
 
@@ -43,6 +52,16 @@ const deleteTodo = async (req: DeleteTodoRequest): Promise<void> => {
 
   if (!res.ok) {
     throw new Error("Todoを削除することができませんでした。");
+  }
+};
+
+const deleteAll = async (): Promise<void> => {
+  const res = await fetch(`${API_SERVER}/todos/delete-all`, {
+    method: "POST",
+  });
+
+  if (!res.ok) {
+    throw new Error("すべてのTodoを削除することができませんでした。");
   }
 };
 
@@ -64,5 +83,6 @@ export const TodoAPI = {
   getAll,
   create,
   delete: deleteTodo,
+  deleteAll,
   update,
 };

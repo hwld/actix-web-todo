@@ -25,7 +25,7 @@ const Component: React.FC<Props> = ({ className }) => {
           color="gray.500"
           lineHeight="base"
         >
-          actix-webとnext.jsを使用したtodoリスト。
+          actix-webとreactを使用したtodoリスト。
           <br />
           バックエンドではdieselを使ってコネクションプールからsqliteに接続する。
           <br />

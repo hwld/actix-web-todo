@@ -1,5 +1,5 @@
 import { chakra, CloseButton, Flex, Text } from "@chakra-ui/react";
-import React, { SyntheticEvent, useState } from "react";
+import React, { SyntheticEvent, useMemo } from "react";
 import { DeleteTodoRequest, Todo, UpdateTodoRequest } from "../api/todo";
 import { TodoCheckBox } from "./TodoCheckBox";
 
@@ -16,17 +16,15 @@ const Component: React.FC<Props> = ({
   deleteTodo,
   updateTodo,
 }) => {
-  const [isDone, setIsDone] = useState(todo.isDone);
-
-  const handleItemClick = () => {
-    setIsDone((isDone) => !isDone);
-    updateTodo({ id: todo.id, isDone: !isDone });
-  };
+  const title = useMemo(() => {
+    if (todo.isDone) {
+      return <del>{todo.title}</del>;
+    }
+    return todo.title;
+  }, [todo.isDone]);
 
   const handleChangeChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const isDone = e.target.checked;
-    setIsDone(isDone);
-    updateTodo({ id: todo.id, isDone });
+    updateTodo({ id: todo.id, isDone: e.target.checked });
   };
 
   const handleClickCloseButton = (e: SyntheticEvent) => {
@@ -35,24 +33,17 @@ const Component: React.FC<Props> = ({
   };
 
   return (
-    <Flex
-      className={className}
-      p={5}
-      justify="space-between"
-      align="center"
-      onClick={handleItemClick}
-    >
+    <Flex className={className} p={5} justify="space-between" align="center">
       <TodoCheckBox
         width="70px"
         height="70px"
         borderRadius="50%"
         iconWidth="30px"
-        colorScheme="green"
-        isChecked={isDone}
+        isChecked={todo.isDone}
         onChange={handleChangeChecked}
       />
       <Text fontWeight="bold" px={5} w="full" wordBreak="break-all">
-        {todo.title}
+        {title}
       </Text>
       <CloseButton
         color="red.500"

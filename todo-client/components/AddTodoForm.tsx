@@ -24,6 +24,7 @@ const Component: React.FC<Props> = ({ className, addTodo }) => {
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
+    setTitle("");
     addTodo({ title });
   };
 
@@ -55,7 +56,7 @@ const Component: React.FC<Props> = ({ className, addTodo }) => {
             variant="solid"
             size="lg"
             type="submit"
-            colorScheme="purple"
+            colorScheme="green"
           >
             追加
           </Button>
