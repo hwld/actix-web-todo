@@ -19,6 +19,7 @@ import { MotionBox } from "./MotionBox";
 import { TodoItem } from "./TodoItem";
 
 type Props = {
+  className?: string;
   dones: Todo[];
   deleteTodo: (req: DeleteTodoRequest) => void;
   updateTodo: (req: UpdateTodoRequest) => void;
@@ -31,13 +32,16 @@ const IconButton = styled(ChakraIconButton)`
   }
 `;
 
-const Component: React.FC<Props> = ({ dones, deleteTodo, updateTodo }) => {
+const Component: React.FC<Props> = ({
+  className,
+  dones,
+  deleteTodo,
+  updateTodo,
+}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  console.log(dones);
-
   return (
-    <chakra.span position="fixed" right="80px" bottom="50px">
+    <chakra.span className={className}>
       <IconButton
         aria-label="checked todo"
         colorScheme="blue"
@@ -65,14 +69,17 @@ const Component: React.FC<Props> = ({ dones, deleteTodo, updateTodo }) => {
         }
         onClick={onOpen}
       />
-      <Modal isOpen={isOpen} onClose={onClose} size="4xl">
+      <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent
           position="fixed"
           top="50px"
           right="50px"
           bottom="50px"
+          left={{ base: "50px", md: "auto" }}
           margin="0"
+          width={{ base: "auto", md: "50vw" }}
+          maxW="none"
         >
           <ModalHeader>完了した作業</ModalHeader>
           <ModalCloseButton />
@@ -109,4 +116,4 @@ const Component: React.FC<Props> = ({ dones, deleteTodo, updateTodo }) => {
   );
 };
 
-export const DoneBox = Component;
+export const DoneBox = chakra(Component);

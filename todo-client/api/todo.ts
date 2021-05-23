@@ -79,7 +79,15 @@ const update = async (req: UpdateTodoRequest): Promise<void> => {
   }
 };
 
-export const TodoAPI = {
+export type TodoAPI = {
+  getAll: typeof getAll;
+  create: typeof create;
+  delete: typeof deleteTodo;
+  deleteAll: typeof deleteAll;
+  update: typeof update;
+};
+
+export const todoAPI: TodoAPI = {
   getAll,
   create,
   delete: deleteTodo,

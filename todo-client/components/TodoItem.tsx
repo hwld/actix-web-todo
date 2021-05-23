@@ -21,7 +21,7 @@ const Component: React.FC<Props> = ({
       return <del>{todo.title}</del>;
     }
     return todo.title;
-  }, [todo.isDone]);
+  }, [todo.isDone, todo.title]);
 
   const handleChangeChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
     updateTodo({ id: todo.id, isDone: e.target.checked });

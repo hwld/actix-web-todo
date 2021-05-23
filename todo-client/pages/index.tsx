@@ -1,16 +1,31 @@
 import { NextPage } from "next";
-import React from "react";
+import React, { useEffect } from "react";
 import { Header } from "../components/Header";
 import { AddTodoForm } from "../components/AddTodoForm";
-import { VStack } from "@chakra-ui/react";
+import { useToast, VStack } from "@chakra-ui/react";
 import { TodoItem } from "../components/TodoItem";
 import { AnimatePresence } from "framer-motion";
 import { MotionBox } from "../components/MotionBox";
 import { DoneBox } from "../components/DoneBox";
 import { useTodos } from "../hooks/useTodos";
+import { todoAPI } from "../api/todo";
 
 const Home: NextPage = () => {
-  const { todos, dones, addTodo, deleteTodo, updateTodo } = useTodos();
+  const { todos, dones, error, addTodo, deleteTodo, updateTodo } = useTodos(
+    todoAPI
+  );
+  const toast = useToast();
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: error.title,
+        description: error.description,
+        status: "error",
+        isClosable: true,
+      });
+    }
+  }, [error, toast]);
 
   return (
     <>
@@ -24,10 +39,10 @@ const Home: NextPage = () => {
       />
 
       <VStack
-        my={{ base: 6, lg: 12 }}
+        mt={{ base: 6, lg: 12 }}
+        mb={{ base: "150px", lg: 12 }}
         spacing={6}
         align="center"
-        h="100%"
         overflowX="clip"
       >
         <AnimatePresence>
@@ -56,7 +71,14 @@ const Home: NextPage = () => {
           ))}
         </AnimatePresence>
       </VStack>
-      <DoneBox dones={dones} deleteTodo={deleteTodo} updateTodo={updateTodo} />
+      <DoneBox
+        position="fixed"
+        right={{ base: "20px", lg: "80px" }}
+        bottom={{ base: "20px", lg: "50px" }}
+        dones={dones}
+        deleteTodo={deleteTodo}
+        updateTodo={updateTodo}
+      />
     </>
   );
 };
