@@ -1,108 +1,16 @@
 import { NextPage } from "next";
-import React, { useCallback, useEffect, useState } from "react";
+import React from "react";
 import { Header } from "../components/Header";
 import { AddTodoForm } from "../components/AddTodoForm";
-import { useToast, VStack } from "@chakra-ui/react";
+import { VStack } from "@chakra-ui/react";
 import { TodoItem } from "../components/TodoItem";
-import {
-  CreateTodoRequest,
-  DeleteTodoRequest,
-  Todo,
-  TodoAPI,
-  UpdateTodoRequest,
-} from "../api/todo";
 import { AnimatePresence } from "framer-motion";
 import { MotionBox } from "../components/MotionBox";
 import { DoneBox } from "../components/DoneBox";
+import { useTodos } from "../hooks/useTodos";
 
 const Home: NextPage = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [dones, setDones] = useState<Todo[]>([]);
-  const toast = useToast();
-
-  const fetchAllTodos = useCallback(async () => {
-    try {
-      const todos = await TodoAPI.getAll();
-      setTodos(todos.filter((t) => !t.isDone).reverse());
-      setDones(todos.filter((t) => t.isDone).reverse());
-    } catch {
-      toast({
-        title: "Todo読み込み失敗",
-        description: "時間をおいて試してください。",
-        isClosable: true,
-        status: "error",
-      });
-    }
-  }, []);
-
-  const addTodo = async (req: CreateTodoRequest) => {
-    try {
-      await TodoAPI.create(req);
-      fetchAllTodos();
-    } catch {
-      toast({
-        title: "Todo作成失敗",
-        description: "時間をおいて試してください。",
-        isClosable: true,
-        status: "error",
-      });
-    }
-  };
-
-  const deleteTodo = async (req: DeleteTodoRequest) => {
-    try {
-      setTodos((todos) => todos.filter((t) => t.id !== req.id));
-      setDones((todos) => todos.filter((t) => t.id !== req.id));
-      await TodoAPI.delete(req);
-      fetchAllTodos();
-    } catch {
-      toast({
-        title: "Todo削除失敗",
-        description: "時間をおいて試してください。",
-        isClosable: true,
-        status: "error",
-      });
-    }
-  };
-
-  const updateTodo = async (req: UpdateTodoRequest) => {
-    try {
-      if (req.isDone) {
-        // isDoneをtrueに変更するときには、状態の変化を表示するためにtodosに追加する。
-        setTodos((todos) =>
-          todos.map((todo) => {
-            if (req.id === todo.id) {
-              return { ...todo, isDone: req.isDone };
-            }
-            return todo;
-          })
-        );
-      } else {
-        // isDoneをfalseに変更するときには、状態の変化を表示するためにdonesに追加する。
-        setDones((dones) =>
-          dones.map((done) => {
-            if (req.id === done.id) {
-              return { ...done, isDone: req.isDone };
-            }
-            return done;
-          })
-        );
-      }
-      await TodoAPI.update(req);
-      fetchAllTodos();
-    } catch {
-      toast({
-        title: "Todo更新失敗",
-        description: "時間をおいて試してください。",
-        isClosable: true,
-        status: "error",
-      });
-    }
-  };
-
-  useEffect(() => {
-    fetchAllTodos();
-  }, []);
+  const { todos, dones, addTodo, deleteTodo, updateTodo } = useTodos();
 
   return (
     <>
