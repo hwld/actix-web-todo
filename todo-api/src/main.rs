@@ -2,7 +2,7 @@
 extern crate diesel;
 
 use actix_cors::Cors;
-use actix_web::{get, http, post, web, App, Error, HttpResponse, HttpServer};
+use actix_web::{delete, get, http, post, put, web, App, Error, HttpResponse, HttpServer};
 use diesel::{r2d2::ConnectionManager, SqliteConnection};
 use dotenv::dotenv;
 use std::env;
@@ -13,7 +13,7 @@ mod schema;
 
 type DbPool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
 
-#[get("/")]
+#[get("")]
 async fn get(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
     let connection = pool.get().expect("couldn't get db connection from pool");
 
@@ -27,14 +27,14 @@ async fn get(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
     Ok(HttpResponse::Ok().json(todos))
 }
 
-#[post("/create")]
+#[post("")]
 async fn create(
+    req: web::Json<models::CreateTodoRequest>,
     pool: web::Data<DbPool>,
-    form: web::Json<models::CreateTodo>,
 ) -> Result<HttpResponse, Error> {
     let connection = pool.get().expect("couldn't get db connection from pool");
 
-    let todo = web::block(move || actions::insert_new_todo(&form.title, &connection))
+    let todo = web::block(move || actions::insert_new_todo(&req.title, &connection))
         .await
         .map_err(|e| {
             eprintln!("{}", e);
@@ -44,14 +44,14 @@ async fn create(
     Ok(HttpResponse::Ok().json(todo))
 }
 
-#[post("/delete")]
+#[delete("/{todo_id}")]
 async fn delete(
+    web::Path(todo_id): web::Path<String>,
     pool: web::Data<DbPool>,
-    form: web::Json<models::DeleteTodo>,
 ) -> Result<HttpResponse, Error> {
     let connection = pool.get().expect("couldn't get db connection from pool");
 
-    web::block(move || actions::delete_todo(&form, &connection))
+    web::block(move || actions::delete_todo(&todo_id, &connection))
         .await
         .map_err(|e| {
             eprintln!("{}", e);
@@ -61,11 +61,14 @@ async fn delete(
     Ok(HttpResponse::Ok().finish())
 }
 
-#[post("/delete-all")]
-async fn delete_all(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
+#[post("/delete")]
+async fn delete_all(
+    form: web::Json<models::DeleteTodosRequest>,
+    pool: web::Data<DbPool>,
+) -> Result<HttpResponse, Error> {
     let connection = pool.get().expect("couldn't get db connection from pool");
 
-    web::block(move || actions::delete_all_todo(&connection))
+    web::block(move || actions::delete_todos(&form, &connection))
         .await
         .map_err(|e| {
             eprintln!("{}", e);
@@ -75,14 +78,15 @@ async fn delete_all(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
     Ok(HttpResponse::Ok().finish())
 }
 
-#[post("/update")]
+#[put("/{todo_id}")]
 async fn update(
+    web::Path(todo_id): web::Path<String>,
+    req: web::Json<models::UpdateTodoRequest>,
     pool: web::Data<DbPool>,
-    form: web::Json<models::UpdateTodo>,
 ) -> Result<HttpResponse, Error> {
     let connection = pool.get().expect("couldn't get db connection from pool");
 
-    web::block(move || actions::update_todo(&form, &connection))
+    web::block(move || actions::update_todo(&todo_id, &req, &connection))
         .await
         .map_err(|e| {
             eprintln!("{}", e);
@@ -107,7 +111,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         let cors = Cors::default()
             .allowed_origin(&allowed_origin)
-            .allowed_methods(vec!["GET", "POST"])
+            .allowed_methods(vec!["GET", "POST", "DELETE", "PUT"])
             .allowed_header(http::header::CONTENT_TYPE)
             .max_age(3600);
 

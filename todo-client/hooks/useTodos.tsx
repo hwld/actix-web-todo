@@ -7,12 +7,12 @@ import {
   UpdateTodoRequest,
 } from "../api/todo";
 
-type useTodosError = { title: string; description: string };
+type UseTodosError = { title: string; description: string };
 
 type UseTodosResult = {
   todos: Todo[];
   dones: Todo[];
-  error: useTodosError | undefined;
+  error: UseTodosError | undefined;
   addTodo: (req: CreateTodoRequest) => Promise<void>;
   deleteTodo: (req: DeleteTodoRequest) => Promise<void>;
   updateTodo: (rep: UpdateTodoRequest) => Promise<void>;
@@ -21,7 +21,7 @@ type UseTodosResult = {
 export const useTodos = (todoAPI: TodoAPI): UseTodosResult => {
   const [todos, setTodos] = useState([]);
   const [dones, setDones] = useState([]);
-  const [error, setError] = useState<useTodosError>();
+  const [error, setError] = useState<UseTodosError>();
 
   const fetchAllTodos = useCallback(async () => {
     try {

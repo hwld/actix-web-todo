@@ -11,18 +11,17 @@ pub struct Todo {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct CreateTodo {
+pub struct CreateTodoRequest {
     pub title: String,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct DeleteTodo {
-    pub id: String,
+pub struct DeleteTodosRequest {
+    pub ids: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct UpdateTodo {
-    pub id: String,
+pub struct UpdateTodoRequest {
     #[serde(rename(deserialize = "isDone"))]
     pub is_done: bool,
 }

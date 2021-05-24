@@ -58,7 +58,7 @@ const Component: React.FC<Props> = ({ className, addTodo }) => {
             type="submit"
             colorScheme="green"
           >
-            追加
+            追加する
           </Button>
         </GridItem>
       </SimpleGrid>

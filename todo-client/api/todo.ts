@@ -13,7 +13,7 @@ export type DeleteTodoRequest = Pick<Todo, "id">;
 export type UpdateTodoRequest = Pick<Todo, "id" | "isDone">;
 
 const getAll = async (): Promise<Todo[]> => {
-  const res = await fetch(`${API_SERVER}/todos/`);
+  const res = await fetch(`${API_SERVER}/todos`);
 
   if (!res.ok) {
     throw new Error("Todoを読み込むことができませんでした。");
@@ -25,7 +25,7 @@ const getAll = async (): Promise<Todo[]> => {
 };
 
 const create = async (req: CreateTodoRequest): Promise<Todo> => {
-  const res = await fetch(`${API_SERVER}/todos/create`, {
+  const res = await fetch(`${API_SERVER}/todos`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -42,12 +42,11 @@ const create = async (req: CreateTodoRequest): Promise<Todo> => {
 };
 
 const deleteTodo = async (req: DeleteTodoRequest): Promise<void> => {
-  const res = await fetch(`${API_SERVER}/todos/delete`, {
-    method: "POST",
+  const res = await fetch(`${API_SERVER}/todos/${req.id}`, {
+    method: "DELETE",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(req),
   });
 
   if (!res.ok) {
@@ -65,9 +64,11 @@ const deleteAll = async (): Promise<void> => {
   }
 };
 
-const update = async (req: UpdateTodoRequest): Promise<void> => {
-  const res = await fetch(`${API_SERVER}/todos/update`, {
-    method: "POST",
+const update = async (r: UpdateTodoRequest): Promise<void> => {
+  const { id, ...req } = r;
+
+  const res = await fetch(`${API_SERVER}/todos/${id}`, {
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },

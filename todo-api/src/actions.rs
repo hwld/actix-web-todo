@@ -32,32 +32,36 @@ pub fn insert_new_todo(
 }
 
 pub fn delete_todo(
-    todo: &models::DeleteTodo,
+    todo_id: &str,
     connection: &SqliteConnection,
 ) -> Result<(), diesel::result::Error> {
     use crate::schema::todos::dsl::*;
 
-    diesel::delete(todos.filter(id.eq(&todo.id))).execute(connection)?;
+    diesel::delete(todos.filter(id.eq(todo_id))).execute(connection)?;
 
     Ok(())
 }
 
-pub fn delete_all_todo(connection: &SqliteConnection) -> Result<(), diesel::result::Error> {
+pub fn delete_todos(
+    req: &models::DeleteTodosRequest,
+    connection: &SqliteConnection,
+) -> Result<(), diesel::result::Error> {
     use crate::schema::todos::dsl::*;
 
-    diesel::delete(todos).execute(connection)?;
+    diesel::delete(todos.filter(id.eq_any(&req.ids))).execute(connection)?;
 
     Ok(())
 }
 
 pub fn update_todo(
-    todo: &models::UpdateTodo,
+    todo_id: &str,
+    req: &models::UpdateTodoRequest,
     connection: &SqliteConnection,
 ) -> Result<(), diesel::result::Error> {
     use crate::schema::todos::dsl::*;
 
-    diesel::update(todos.filter(id.eq(&todo.id)))
-        .set(is_done.eq(todo.is_done))
+    diesel::update(todos.filter(id.eq(todo_id)))
+        .set(is_done.eq(req.is_done))
         .execute(connection)?;
 
     Ok(())

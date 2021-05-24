@@ -1,10 +1,12 @@
 import {
+  Button,
   chakra,
   IconButton as ChakraIconButton,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   useDisclosure,
@@ -39,6 +41,10 @@ const Component: React.FC<Props> = ({
   updateTodo,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const handleDeleteAllDones = async () => {
+    dones.forEach((done) => deleteTodo({ id: done.id }));
+  };
 
   return (
     <chakra.span className={className}>
@@ -110,6 +116,14 @@ const Component: React.FC<Props> = ({
               </AnimatePresence>
             </VStack>
           </ModalBody>
+          <ModalFooter bg="gray.600">
+            <Button mr={5} onClick={onClose}>
+              閉じる
+            </Button>
+            <Button colorScheme="red" onClick={handleDeleteAllDones}>
+              すべて削除する
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </chakra.span>
