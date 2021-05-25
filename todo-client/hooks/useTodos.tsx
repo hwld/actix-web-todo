@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   CreateTodoRequest,
+  DeleteMultipleTodosRequest,
   DeleteTodoRequest,
   Todo,
   TodoAPI,
@@ -15,6 +16,7 @@ type UseTodosResult = {
   error: UseTodosError | undefined;
   addTodo: (req: CreateTodoRequest) => Promise<void>;
   deleteTodo: (req: DeleteTodoRequest) => Promise<void>;
+  deleteMultipleTodos: (req: DeleteMultipleTodosRequest) => Promise<void>;
   updateTodo: (rep: UpdateTodoRequest) => Promise<void>;
 };
 
@@ -70,6 +72,24 @@ export const useTodos = (todoAPI: TodoAPI): UseTodosResult => {
     [fetchAllTodos, todoAPI]
   );
 
+  const deleteMultipleTodos = useCallback(
+    async (req: DeleteMultipleTodosRequest) => {
+      try {
+        setTodos((todos) => todos.filter((t) => !req.ids.includes(t.id)));
+        setDones((todos) => todos.filter((t) => !req.ids.includes(t.id)));
+        await todoAPI.deleteMultiple(req);
+      } catch {
+        setError({
+          title: "複数Todo削除失敗",
+          description: "時間をおいて試してください。",
+        });
+      } finally {
+        fetchAllTodos();
+      }
+    },
+    [fetchAllTodos]
+  );
+
   const updateTodo = useCallback(
     async (req: UpdateTodoRequest) => {
       try {
@@ -118,6 +138,7 @@ export const useTodos = (todoAPI: TodoAPI): UseTodosResult => {
     error,
     addTodo,
     deleteTodo,
+    deleteMultipleTodos,
     updateTodo,
   };
 };

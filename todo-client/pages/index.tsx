@@ -11,9 +11,15 @@ import { useTodos } from "../hooks/useTodos";
 import { todoAPI } from "../api/todo";
 
 const Home: NextPage = () => {
-  const { todos, dones, error, addTodo, deleteTodo, updateTodo } = useTodos(
-    todoAPI
-  );
+  const {
+    todos,
+    dones,
+    error,
+    addTodo,
+    deleteTodo,
+    deleteMultipleTodos,
+    updateTodo,
+  } = useTodos(todoAPI);
   const toast = useToast();
 
   useEffect(() => {
@@ -77,6 +83,7 @@ const Home: NextPage = () => {
         bottom={{ base: "20px", lg: "50px" }}
         dones={dones}
         deleteTodo={deleteTodo}
+        deleteMultipleTodo={deleteMultipleTodos}
         updateTodo={updateTodo}
       />
     </>

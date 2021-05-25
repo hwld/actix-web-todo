@@ -10,6 +10,8 @@ export type CreateTodoRequest = Pick<Todo, "title">;
 
 export type DeleteTodoRequest = Pick<Todo, "id">;
 
+export type DeleteMultipleTodosRequest = { ids: Todo["id"][] };
+
 export type UpdateTodoRequest = Pick<Todo, "id" | "isDone">;
 
 const getAll = async (): Promise<Todo[]> => {
@@ -54,6 +56,22 @@ const deleteTodo = async (req: DeleteTodoRequest): Promise<void> => {
   }
 };
 
+const deleteMultiple = async (
+  req: DeleteMultipleTodosRequest
+): Promise<void> => {
+  const res = await fetch(`${API_SERVER}/todos/delete`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(req),
+  });
+
+  if (!res.ok) {
+    throw new Error("複数のTodosを削除することができませんでした。");
+  }
+};
+
 const deleteAll = async (): Promise<void> => {
   const res = await fetch(`${API_SERVER}/todos/delete-all`, {
     method: "POST",
@@ -84,6 +102,7 @@ export type TodoAPI = {
   getAll: typeof getAll;
   create: typeof create;
   delete: typeof deleteTodo;
+  deleteMultiple: typeof deleteMultiple;
   deleteAll: typeof deleteAll;
   update: typeof update;
 };
@@ -92,6 +111,7 @@ export const todoAPI: TodoAPI = {
   getAll,
   create,
   delete: deleteTodo,
+  deleteMultiple,
   deleteAll,
   update,
 };

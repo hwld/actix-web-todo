@@ -16,7 +16,12 @@ import styled from "@emotion/styled";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
 import { MdPlaylistAddCheck } from "react-icons/md";
-import { DeleteTodoRequest, Todo, UpdateTodoRequest } from "../api/todo";
+import {
+  DeleteMultipleTodosRequest,
+  DeleteTodoRequest,
+  Todo,
+  UpdateTodoRequest,
+} from "../api/todo";
 import { MotionBox } from "./MotionBox";
 import { TodoItem } from "./TodoItem";
 
@@ -24,6 +29,7 @@ type Props = {
   className?: string;
   dones: Todo[];
   deleteTodo: (req: DeleteTodoRequest) => void;
+  deleteMultipleTodo: (req: DeleteMultipleTodosRequest) => void;
   updateTodo: (req: UpdateTodoRequest) => void;
 };
 
@@ -38,12 +44,13 @@ const Component: React.FC<Props> = ({
   className,
   dones,
   deleteTodo,
+  deleteMultipleTodo,
   updateTodo,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleDeleteAllDones = async () => {
-    dones.forEach((done) => deleteTodo({ id: done.id }));
+    deleteMultipleTodo({ ids: dones.map((d) => d.id) });
   };
 
   return (
