@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { useCallback, useEffect, useState } from "react";
 import {
   CreateTodoRequest,
@@ -10,7 +11,7 @@ import {
 
 type UseTodosError = { title: string; description: string };
 
-type UseTodosResult = {
+export type UseTodosResult = {
   todos: Todo[];
   dones: Todo[];
   error: UseTodosError | undefined;
@@ -19,6 +20,16 @@ type UseTodosResult = {
   deleteMultipleTodos: (req: DeleteMultipleTodosRequest) => Promise<void>;
   updateTodo: (rep: UpdateTodoRequest) => Promise<void>;
 };
+
+export const getDefaultUseTodosResult = (): UseTodosResult => ({
+  todos: [],
+  dones: [],
+  error: undefined,
+  addTodo: async () => {},
+  deleteTodo: async () => {},
+  deleteMultipleTodos: async () => {},
+  updateTodo: async () => {},
+});
 
 export const useTodos = (todoAPI: TodoAPI): UseTodosResult => {
   const [todos, setTodos] = useState([]);
@@ -87,7 +98,7 @@ export const useTodos = (todoAPI: TodoAPI): UseTodosResult => {
         fetchAllTodos();
       }
     },
-    [fetchAllTodos]
+    [fetchAllTodos, todoAPI]
   );
 
   const updateTodo = useCallback(

@@ -7,8 +7,7 @@ import { TodoItem } from "../components/TodoItem";
 import { AnimatePresence } from "framer-motion";
 import { MotionBox } from "../components/MotionBox";
 import { DoneBox } from "../components/DoneBox";
-import { useTodos } from "../hooks/useTodos";
-import { todoAPI } from "../api/todo";
+import { useTodosContext } from "../context/TodosContext";
 
 const Home: NextPage = () => {
   const {
@@ -19,7 +18,7 @@ const Home: NextPage = () => {
     deleteTodo,
     deleteMultipleTodos,
     updateTodo,
-  } = useTodos(todoAPI);
+  } = useTodosContext();
   const toast = useToast();
 
   useEffect(() => {
