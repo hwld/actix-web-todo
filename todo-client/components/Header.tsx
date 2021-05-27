@@ -8,7 +8,7 @@ const Component: React.FC<Props> = ({ className }) => {
     <Box px={4} pt={10} className={className}>
       <Box
         w={{ base: "full", md: 11 / 12, xl: 8 / 12 }}
-        textAlign={{ base: "left", md: "center" }}
+        textAlign="center"
         mx="auto"
       >
         <Heading

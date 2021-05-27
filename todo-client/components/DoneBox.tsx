@@ -96,14 +96,14 @@ const Component: React.FC<Props> = ({
         >
           <ModalHeader>完了した作業</ModalHeader>
           <ModalCloseButton />
-          <ModalBody overflow="auto">
+          <ModalBody overflow="auto" p={0}>
             <VStack my={10} spacing={6}>
               <AnimatePresence>
                 {dones.map((done) => (
                   <MotionBox
                     key={done.id}
                     layout
-                    w="80%"
+                    w="90%"
                     // checkBoxのアニメーションのあとに終了したい。現在checkBoxのアニメーションの時間に合わせて指定する。
                     // どうにかしてcheckBoxのアニメーションの時間を外側から指定できたらいいんだけど・・・
                     exit={{
