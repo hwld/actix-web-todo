@@ -8,6 +8,7 @@ type Props = {
   todo: Todo;
   deleteTodo: (req: DeleteTodoRequest) => void;
   updateTodo: (req: UpdateTodoRequest) => void;
+  trigerGiveUpAllTodos: () => void;
 };
 
 const Component: React.FC<Props> = ({
@@ -15,6 +16,7 @@ const Component: React.FC<Props> = ({
   todo,
   deleteTodo,
   updateTodo,
+  trigerGiveUpAllTodos,
 }) => {
   const title = useMemo(() => {
     if (todo.isDone) {
@@ -24,6 +26,10 @@ const Component: React.FC<Props> = ({
   }, [todo.isDone, todo.title]);
 
   const handleChangeChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (todo.title === '"すべてを諦める"' && e.target.checked) {
+      trigerGiveUpAllTodos();
+      return;
+    }
     updateTodo({ id: todo.id, isDone: e.target.checked });
   };
 

@@ -1,4 +1,14 @@
-import { useToast, VStack } from "@chakra-ui/react";
+import {
+  Button,
+  Modal,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  useDisclosure,
+  useToast,
+  VStack,
+} from "@chakra-ui/react";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect } from "react";
 import { TodoAPI } from "../api/todo";
@@ -23,7 +33,19 @@ const Component: React.FC<Props> = ({ todoApi }) => {
     deleteMultipleTodos,
     updateTodo,
   } = useTodos(todoApi);
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const toast = useToast();
+
+  const handleTrigerGiveUpAllTodos = () => {
+    onOpen();
+  };
+
+  const handleClickDeleteAllButton = () => {
+    deleteMultipleTodos({ ids: todos.map((t) => t.id) });
+    onClose();
+  };
 
   useEffect(() => {
     if (error) {
@@ -75,6 +97,7 @@ const Component: React.FC<Props> = ({ todoApi }) => {
                 todo={todo}
                 deleteTodo={deleteTodo}
                 updateTodo={updateTodo}
+                trigerGiveUpAllTodos={handleTrigerGiveUpAllTodos}
               />
             </MotionBox>
           ))}
@@ -89,6 +112,19 @@ const Component: React.FC<Props> = ({ todoApi }) => {
         deleteMultipleTodo={deleteMultipleTodos}
         updateTodo={updateTodo}
       />
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>すべてを諦めますか？</ModalHeader>
+          <ModalFooter>
+            <Button mr={5}>諦めない</Button>
+            <Button colorScheme="red" onClick={handleClickDeleteAllButton}>
+              諦める
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 };

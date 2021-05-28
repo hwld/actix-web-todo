@@ -127,7 +127,7 @@ export const useTodos = (todoAPI: TodoAPI): UseTodosResult => {
 
   const uncheckTodo = useCallback(
     async (id: string) => {
-      setTodos((todos) =>
+      setDones((todos) =>
         todos.map((todo) => {
           if (id === todo.id) {
             return { ...todo, isDone: false };
