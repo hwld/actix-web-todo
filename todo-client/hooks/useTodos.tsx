@@ -32,8 +32,8 @@ export const getDefaultUseTodosResult = (): UseTodosResult => ({
 });
 
 export const useTodos = (todoAPI: TodoAPI): UseTodosResult => {
-  const [todos, setTodos] = useState([]);
-  const [dones, setDones] = useState([]);
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [dones, setDones] = useState<Todo[]>([]);
   const [error, setError] = useState<UseTodosError>();
 
   const fetchAllTodos = useCallback(async () => {
@@ -43,7 +43,7 @@ export const useTodos = (todoAPI: TodoAPI): UseTodosResult => {
       setDones(todos.filter((t) => t.isDone).reverse());
     } catch {
       setError({
-        title: "Todo読み込み失敗",
+        title: "Todoの読み込みに失敗",
         description: "時間をおいて試してください",
       });
     }
@@ -55,7 +55,7 @@ export const useTodos = (todoAPI: TodoAPI): UseTodosResult => {
         await todoAPI.create(req);
       } catch {
         setError({
-          title: "Todo作成失敗",
+          title: "Todoの作成に失敗",
           description: "時間をおいて試してください。",
         });
       } finally {
@@ -67,13 +67,13 @@ export const useTodos = (todoAPI: TodoAPI): UseTodosResult => {
 
   const deleteTodo = useCallback(
     async (req: DeleteTodoRequest) => {
+      setTodos((todos) => todos.filter((t) => t.id !== req.id));
+      setDones((todos) => todos.filter((t) => t.id !== req.id));
       try {
-        setTodos((todos) => todos.filter((t) => t.id !== req.id));
-        setDones((todos) => todos.filter((t) => t.id !== req.id));
         await todoAPI.delete(req);
       } catch {
         setError({
-          title: "Todo削除失敗",
+          title: "Todoの削除に失敗",
           description: "時間をおいて試してください。",
         });
       } finally {
@@ -85,13 +85,61 @@ export const useTodos = (todoAPI: TodoAPI): UseTodosResult => {
 
   const deleteMultipleTodos = useCallback(
     async (req: DeleteMultipleTodosRequest) => {
+      setTodos((todos) => todos.filter((t) => !req.ids.includes(t.id)));
+      setDones((todos) => todos.filter((t) => !req.ids.includes(t.id)));
       try {
-        setTodos((todos) => todos.filter((t) => !req.ids.includes(t.id)));
-        setDones((todos) => todos.filter((t) => !req.ids.includes(t.id)));
         await todoAPI.deleteMultiple(req);
       } catch {
         setError({
-          title: "複数Todo削除失敗",
+          title: "複数のTodoの削除に失敗",
+          description: "時間をおいて試してください。",
+        });
+      } finally {
+        fetchAllTodos();
+      }
+    },
+    [fetchAllTodos, todoAPI]
+  );
+
+  const checkTodo = useCallback(
+    async (id: string) => {
+      setTodos((todos) =>
+        todos.map((todo) => {
+          if (id === todo.id) {
+            return { ...todo, isDone: true };
+          }
+          return todo;
+        })
+      );
+      try {
+        await todoAPI.update({ id, isDone: true });
+      } catch {
+        setError({
+          title: "Todoの完了に失敗",
+          description: "時間をおいて試してください。",
+        });
+      } finally {
+        fetchAllTodos();
+      }
+    },
+    [fetchAllTodos, todoAPI]
+  );
+
+  const uncheckTodo = useCallback(
+    async (id: string) => {
+      setTodos((todos) =>
+        todos.map((todo) => {
+          if (id === todo.id) {
+            return { ...todo, isDone: false };
+          }
+          return todo;
+        })
+      );
+      try {
+        await todoAPI.update({ id, isDone: false });
+      } catch {
+        setError({
+          title: "Todoの完了状態の取り消しに失敗",
           description: "時間をおいて試してください。",
         });
       } finally {
@@ -103,40 +151,13 @@ export const useTodos = (todoAPI: TodoAPI): UseTodosResult => {
 
   const updateTodo = useCallback(
     async (req: UpdateTodoRequest) => {
-      try {
-        if (req.isDone) {
-          // isDoneをtrueに変更するときには、状態の変化を表示するために先ずはtodosに追加する。
-          setTodos((todos) =>
-            todos.map((todo) => {
-              if (req.id === todo.id) {
-                return { ...todo, isDone: req.isDone };
-              }
-              return todo;
-            })
-          );
-        } else {
-          // isDoneをfalseに変更するときには、状態の変化を表示するために先ずはdonesに追加する。
-          setDones((dones) =>
-            dones.map((done) => {
-              if (req.id === done.id) {
-                return { ...done, isDone: req.isDone };
-              }
-              return done;
-            })
-          );
-        }
-        await todoAPI.update(req);
-      } catch {
-        setError({
-          title: "Todo更新失敗",
-          description: "時間をおいて試してください。",
-        });
-      } finally {
-        // ここでisDoneがfalseであればtodosに、trueであればdonesに追加される
-        fetchAllTodos();
+      if (req.isDone) {
+        checkTodo(req.id);
+      } else {
+        uncheckTodo(req.id);
       }
     },
-    [fetchAllTodos, todoAPI]
+    [checkTodo, uncheckTodo]
   );
 
   useEffect(() => {
