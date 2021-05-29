@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "eslint components api hooks pages --ext .ts,.tsx",
+    "ts-check": "tsc --noEmit",
+    "check": "yarn run ts-check && yarn run lint"
   },
   "dependencies": {
     "@chakra-ui/icons": "^1.0.13",

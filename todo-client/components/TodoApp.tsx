@@ -1,20 +1,11 @@
-import {
-  Button,
-  Modal,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  useDisclosure,
-  useToast,
-  VStack,
-} from "@chakra-ui/react";
+import { useDisclosure, useToast, VStack } from "@chakra-ui/react";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect } from "react";
-import { TodoAPI } from "../api/todo";
+import { TodoAPI, UpdateTodoRequest } from "../api/todo";
 import { useTodos } from "../hooks/useTodos";
 import { AddTodoForm } from "./AddTodoForm";
 import { DoneBox } from "./DoneBox";
+import { GiveUpDialog } from "./GiveUpDialog";
 import { Header } from "./Header";
 import { MotionBox } from "./MotionBox";
 import { TodoItem } from "./TodoItem";
@@ -34,17 +25,28 @@ const Component: React.FC<Props> = ({ todoApi }) => {
     updateTodo,
   } = useTodos(todoApi);
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenGiveUpDialog,
+    onOpen: onOpenGiveUpDialog,
+    onClose: onCloseGiveUpDialog,
+  } = useDisclosure();
 
   const toast = useToast();
 
-  const handleTrigerGiveUpAllTodos = () => {
-    onOpen();
+  const giveUpWord = '"すべてを諦める"';
+
+  const handleDeleteAll = () => {
+    deleteMultipleTodos({ ids: todos.map((t) => t.id) });
   };
 
-  const handleClickDeleteAllButton = () => {
-    deleteMultipleTodos({ ids: todos.map((t) => t.id) });
-    onClose();
+  const handleChangeChecked = (req: UpdateTodoRequest) => {
+    const title = todos.concat(dones).find((t) => t.id === req.id)?.title;
+
+    if (title && title == giveUpWord && req.isDone) {
+      onOpenGiveUpDialog();
+      return;
+    }
+    updateTodo(req);
   };
 
   useEffect(() => {
@@ -66,7 +68,7 @@ const Component: React.FC<Props> = ({ todoApi }) => {
         top="0"
         bg="gray.900"
         zIndex={1}
-        addTodo={addTodo}
+        onAddTodo={addTodo}
       />
 
       <VStack
@@ -77,54 +79,49 @@ const Component: React.FC<Props> = ({ todoApi }) => {
         overflowX="clip"
       >
         <AnimatePresence>
-          {todos.map((todo) => (
-            <MotionBox
-              key={todo.id}
-              w={{ base: "95%", lg: "50%" }}
-              layout
-              initial={{ x: -300 }}
-              animate={{ x: 0 }}
-              // checkBoxのアニメーションのあとに終了したい。現在checkBoxのアニメーションの時間に合わせて指定する。
-              // どうにかしてcheckBoxのアニメーションの時間を外側から指定できたらいいんだけど・・・
-              exit={{
-                opacity: 0,
-                transition: { duration: 0.2 },
-              }}
-            >
-              <TodoItem
-                bg="gray.600"
-                borderRadius="10px"
-                todo={todo}
-                deleteTodo={deleteTodo}
-                updateTodo={updateTodo}
-                trigerGiveUpAllTodos={handleTrigerGiveUpAllTodos}
-              />
-            </MotionBox>
-          ))}
+          {todos.map((todo) => {
+            return (
+              <MotionBox
+                key={todo.id}
+                w={{ base: "95%", lg: "50%" }}
+                layout
+                initial={{ x: -300 }}
+                animate={{ x: 0 }}
+                // checkBoxのアニメーションのあとに終了したい。現在checkBoxのアニメーションの時間に合わせて指定する。
+                // どうにかしてcheckBoxのアニメーションの時間を外側から指定できたらいいんだけど・・・
+                exit={{
+                  opacity: 0,
+                  transition: { duration: 0.2 },
+                }}
+              >
+                <TodoItem
+                  bg="gray.600"
+                  borderRadius="10px"
+                  todo={todo}
+                  onDeleteTodo={deleteTodo}
+                  onChangeChecked={handleChangeChecked}
+                />
+              </MotionBox>
+            );
+          })}
         </AnimatePresence>
       </VStack>
+
       <DoneBox
         position="fixed"
         right={{ base: "20px", lg: "80px" }}
         bottom={{ base: "20px", lg: "50px" }}
         dones={dones}
-        deleteTodo={deleteTodo}
-        deleteMultipleTodo={deleteMultipleTodos}
-        updateTodo={updateTodo}
+        onDeleteTodo={deleteTodo}
+        onDeleteMultipleTodo={deleteMultipleTodos}
+        onUpdateTodo={updateTodo}
       />
 
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>すべてを諦めますか？</ModalHeader>
-          <ModalFooter>
-            <Button mr={5}>諦めない</Button>
-            <Button colorScheme="red" onClick={handleClickDeleteAllButton}>
-              諦める
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <GiveUpDialog
+        isOpen={isOpenGiveUpDialog}
+        onClose={onCloseGiveUpDialog}
+        onGiveUpAll={handleDeleteAll}
+      />
     </>
   );
 };

@@ -12,10 +12,10 @@ import { CreateTodoRequest } from "../api/todo";
 
 type Props = {
   className?: string;
-  addTodo: (req: CreateTodoRequest) => void;
+  onAddTodo: (req: CreateTodoRequest) => void;
 };
 
-const Component: React.FC<Props> = ({ className, addTodo }) => {
+const Component: React.FC<Props> = ({ className, onAddTodo }) => {
   const [title, setTitle] = useState("");
 
   const handleChangeTitle = (e: ChangeEvent<HTMLInputElement>) => {
@@ -25,7 +25,7 @@ const Component: React.FC<Props> = ({ className, addTodo }) => {
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
     setTitle("");
-    addTodo({ title });
+    onAddTodo({ title });
   };
 
   return (

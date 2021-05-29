@@ -6,17 +6,15 @@ import { TodoCheckBox } from "./TodoCheckBox";
 type Props = {
   className?: string;
   todo: Todo;
-  deleteTodo: (req: DeleteTodoRequest) => void;
-  updateTodo: (req: UpdateTodoRequest) => void;
-  trigerGiveUpAllTodos: () => void;
+  onDeleteTodo: (req: DeleteTodoRequest) => void;
+  onChangeChecked: (req: UpdateTodoRequest) => void;
 };
 
 const Component: React.FC<Props> = ({
   className,
   todo,
-  deleteTodo,
-  updateTodo,
-  trigerGiveUpAllTodos,
+  onDeleteTodo,
+  onChangeChecked,
 }) => {
   const title = useMemo(() => {
     if (todo.isDone) {
@@ -26,16 +24,12 @@ const Component: React.FC<Props> = ({
   }, [todo.isDone, todo.title]);
 
   const handleChangeChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (todo.title === '"すべてを諦める"' && e.target.checked) {
-      trigerGiveUpAllTodos();
-      return;
-    }
-    updateTodo({ id: todo.id, isDone: e.target.checked });
+    onChangeChecked({ id: todo.id, isDone: e.target.checked });
   };
 
   const handleClickCloseButton = (e: SyntheticEvent) => {
     e.stopPropagation();
-    deleteTodo({ id: todo.id });
+    onDeleteTodo({ id: todo.id });
   };
 
   return (

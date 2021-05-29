@@ -28,9 +28,9 @@ import { TodoItem } from "./TodoItem";
 type Props = {
   className?: string;
   dones: Todo[];
-  deleteTodo: (req: DeleteTodoRequest) => void;
-  deleteMultipleTodo: (req: DeleteMultipleTodosRequest) => void;
-  updateTodo: (req: UpdateTodoRequest) => void;
+  onDeleteTodo: (req: DeleteTodoRequest) => void;
+  onDeleteMultipleTodo: (req: DeleteMultipleTodosRequest) => void;
+  onUpdateTodo: (req: UpdateTodoRequest) => void;
 };
 
 const IconButton = styled(ChakraIconButton)`
@@ -43,14 +43,14 @@ const IconButton = styled(ChakraIconButton)`
 const Component: React.FC<Props> = ({
   className,
   dones,
-  deleteTodo,
-  deleteMultipleTodo,
-  updateTodo,
+  onDeleteTodo,
+  onDeleteMultipleTodo,
+  onUpdateTodo,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleDeleteAllDones = async () => {
-    deleteMultipleTodo({ ids: dones.map((d) => d.id) });
+    onDeleteMultipleTodo({ ids: dones.map((d) => d.id) });
   };
 
   return (
@@ -115,8 +115,8 @@ const Component: React.FC<Props> = ({
                       bg="gray.600"
                       borderRadius="10px"
                       todo={done}
-                      deleteTodo={deleteTodo}
-                      updateTodo={updateTodo}
+                      onDeleteTodo={onDeleteTodo}
+                      onChangeChecked={onUpdateTodo}
                     />
                   </MotionBox>
                 ))}
