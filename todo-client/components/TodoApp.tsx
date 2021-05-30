@@ -1,12 +1,12 @@
-import { useDisclosure, useToast, VStack } from "@chakra-ui/react";
+import { ChakraProps, useToast, VStack } from "@chakra-ui/react";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
-import { TodoAPI, UpdateTodoRequest } from "../api/todo";
+import { TodoAPI } from "../api/todo";
 import { useTodos } from "../hooks/useTodos";
 import { AddTodoForm } from "./AddTodoForm";
-import { ChangeFontSizeDialog } from "./ChangeFontSizeDialog";
+import { ChangeFontSizeCommandTodo } from "./ChangeFontSizeCommandTodo";
 import { DoneBox } from "./DoneBox";
-import { GiveUpDialog } from "./GiveUpDialog";
+import { GiveUpAllCommandTodo } from "./GiveUpAllCommandTodo";
 import { Header } from "./Header";
 import { MotionBox } from "./MotionBox";
 import { TodoItem } from "./TodoItem";
@@ -28,53 +28,8 @@ const Component: React.FC<Props> = ({ todoApi }) => {
   const toast = useToast();
   const [todoFontSize, setTodoFontSize] = useState(1);
 
-  const giveUpText = '"すべてを諦める"';
-  const {
-    isOpen: isOpenGiveUpDialog,
-    onOpen: onOpenGiveUpDialog,
-    onClose: onCloseGiveUpDialog,
-  } = useDisclosure();
-  const handleGiveUpAll = async () => {
-    const commandTodoId = todos.find((t) => t.title === giveUpText)?.id;
-    if (commandTodoId) {
-      await updateTodo({ id: commandTodoId, isDone: true });
-    }
-
-    deleteMultipleTodos({ ids: todos.map((t) => t.id) });
-  };
-
+  const giveUpAllText = '"すべてを諦める"';
   const changeFontSizeText = '"文字の大きさを変える"';
-  const {
-    isOpen: isOpenChangeFontSizeDialog,
-    onOpen: onOpenChangeFontSizeDialog,
-    onClose: onCloseChangeFontSizeDialog,
-  } = useDisclosure();
-  const handleChangeFontSize = async (fontSize: number) => {
-    setTodoFontSize(fontSize);
-
-    const commandTodoId = todos.find((t) => t.title === changeFontSizeText)?.id;
-    if (commandTodoId) {
-      await updateTodo({ id: commandTodoId, isDone: true });
-      deleteTodo({ id: commandTodoId });
-    }
-  };
-
-  const handleChangeChecked = (req: UpdateTodoRequest) => {
-    // isDoneがfalseのタスク(todos)のみ探す
-    const title = todos.find((t) => t.id === req.id)?.title;
-
-    if (title && req.isDone) {
-      switch (title) {
-        case giveUpText:
-          onOpenGiveUpDialog();
-          return;
-        case changeFontSizeText:
-          onOpenChangeFontSizeDialog();
-          return;
-      }
-    }
-    updateTodo(req);
-  };
 
   useEffect(() => {
     if (error) {
@@ -107,6 +62,52 @@ const Component: React.FC<Props> = ({ todoApi }) => {
       >
         <AnimatePresence>
           {todos.map((todo) => {
+            const todoProps: ChakraProps = {
+              bg: "gray.600",
+              borderRadius: "10px",
+              fontSize: `${todoFontSize}rem`,
+            };
+            let todoElement: JSX.Element;
+            switch (todo.title) {
+              case giveUpAllText: {
+                todoElement = (
+                  <GiveUpAllCommandTodo
+                    {...todoProps}
+                    todo={todo}
+                    allTodos={todos}
+                    onDeleteTodo={deleteTodo}
+                    onDeleteMultiple={deleteMultipleTodos}
+                    onChangeChecked={updateTodo}
+                  />
+                );
+                break;
+              }
+              case changeFontSizeText: {
+                todoElement = (
+                  <ChangeFontSizeCommandTodo
+                    {...todoProps}
+                    defaultFontSize={todoFontSize}
+                    todo={todo}
+                    onDeleteTodo={deleteTodo}
+                    onChangeFontSize={setTodoFontSize}
+                    onChangeChecked={updateTodo}
+                  />
+                );
+                break;
+              }
+              default: {
+                todoElement = (
+                  <TodoItem
+                    {...todoProps}
+                    todo={todo}
+                    onDeleteTodo={deleteTodo}
+                    onChangeChecked={updateTodo}
+                  />
+                );
+                break;
+              }
+            }
+
             return (
               <MotionBox
                 key={todo.id}
@@ -121,14 +122,7 @@ const Component: React.FC<Props> = ({ todoApi }) => {
                   transition: { duration: 0.2 },
                 }}
               >
-                <TodoItem
-                  bg="gray.600"
-                  borderRadius="10px"
-                  fontSize={`${todoFontSize}rem`}
-                  todo={todo}
-                  onDeleteTodo={deleteTodo}
-                  onChangeChecked={handleChangeChecked}
-                />
+                {todoElement}
               </MotionBox>
             );
           })}
@@ -144,19 +138,6 @@ const Component: React.FC<Props> = ({ todoApi }) => {
         onDeleteTodo={deleteTodo}
         onDeleteMultipleTodo={deleteMultipleTodos}
         onUpdateTodo={updateTodo}
-      />
-
-      <GiveUpDialog
-        isOpen={isOpenGiveUpDialog}
-        onClose={onCloseGiveUpDialog}
-        onGiveUpAll={handleGiveUpAll}
-      />
-
-      <ChangeFontSizeDialog
-        isOpen={isOpenChangeFontSizeDialog}
-        onClose={onCloseChangeFontSizeDialog}
-        defaultFontSize={todoFontSize}
-        onChangeFontSize={handleChangeFontSize}
       />
     </>
   );

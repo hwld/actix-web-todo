@@ -3,14 +3,14 @@ import React, { SyntheticEvent, useMemo } from "react";
 import { DeleteTodoRequest, Todo, UpdateTodoRequest } from "../api/todo";
 import { TodoCheckBox } from "./TodoCheckBox";
 
-type Props = {
+export type TodoItemProps = {
   className?: string;
   todo: Todo;
   onDeleteTodo: (req: DeleteTodoRequest) => void;
   onChangeChecked: (req: UpdateTodoRequest) => void;
 };
 
-const Component: React.FC<Props> = ({
+const Component: React.FC<TodoItemProps> = ({
   className,
   todo,
   onDeleteTodo,
