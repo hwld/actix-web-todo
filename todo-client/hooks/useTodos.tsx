@@ -152,9 +152,9 @@ export const useTodos = (todoAPI: TodoAPI): UseTodosResult => {
   const updateTodo = useCallback(
     async (req: UpdateTodoRequest) => {
       if (req.isDone) {
-        checkTodo(req.id);
+        await checkTodo(req.id);
       } else {
-        uncheckTodo(req.id);
+        await uncheckTodo(req.id);
       }
     },
     [checkTodo, uncheckTodo]

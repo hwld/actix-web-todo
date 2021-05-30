@@ -21,17 +21,15 @@ const Component: React.FC<Props> = ({ isOpen, onClose, onGiveUpAll }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>すべてを諦めますか？</ModalHeader>
         <ModalFooter>
-          <Button mr={5} onClick={onClose}>
+          <Button colorScheme="red" mr={5} onClick={onClose}>
             諦めない
           </Button>
-          <Button colorScheme="red" onClick={handleClickGiveUpButton}>
-            諦める
-          </Button>
+          <Button onClick={handleClickGiveUpButton}>諦める</Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

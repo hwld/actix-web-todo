@@ -28,6 +28,7 @@ import { TodoItem } from "./TodoItem";
 type Props = {
   className?: string;
   dones: Todo[];
+  todoFontSize: string;
   onDeleteTodo: (req: DeleteTodoRequest) => void;
   onDeleteMultipleTodo: (req: DeleteMultipleTodosRequest) => void;
   onUpdateTodo: (req: UpdateTodoRequest) => void;
@@ -43,6 +44,7 @@ const IconButton = styled(ChakraIconButton)`
 const Component: React.FC<Props> = ({
   className,
   dones,
+  todoFontSize,
   onDeleteTodo,
   onDeleteMultipleTodo,
   onUpdateTodo,
@@ -114,6 +116,7 @@ const Component: React.FC<Props> = ({
                     <TodoItem
                       bg="gray.600"
                       borderRadius="10px"
+                      fontSize={todoFontSize}
                       todo={done}
                       onDeleteTodo={onDeleteTodo}
                       onChangeChecked={onUpdateTodo}
