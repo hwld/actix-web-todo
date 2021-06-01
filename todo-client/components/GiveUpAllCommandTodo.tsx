@@ -3,20 +3,15 @@ import { chakra } from "@chakra-ui/react";
 import React from "react";
 import {
   DeleteMultipleTodosRequest,
-  DeleteTodoRequest,
   Todo,
   UpdateTodoRequest,
 } from "../api/todo";
 import { GiveUpDialog } from "./GiveUpDialog";
-import { TodoItem } from "./TodoItem";
+import { TodoItem, TodoItemProps } from "./TodoItem";
 
-type Props = {
-  className?: string;
-  todo: Todo;
+type Props = TodoItemProps & {
   allTodos: Todo[];
-  onDeleteTodo: (req: DeleteTodoRequest) => void;
   onDeleteMultiple: (req: DeleteMultipleTodosRequest) => void;
-  onChangeChecked: (req: UpdateTodoRequest) => Promise<void>;
 };
 
 const Component: React.FC<Props> = ({
@@ -26,10 +21,11 @@ const Component: React.FC<Props> = ({
   onDeleteTodo,
   onDeleteMultiple,
   onChangeChecked,
+  ...props
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleChangeChecked = (req: UpdateTodoRequest) => {
+  const handleChangeChecked = async (req: UpdateTodoRequest) => {
     if (req.isDone) {
       onOpen();
     }
@@ -48,6 +44,7 @@ const Component: React.FC<Props> = ({
         todo={todo}
         onDeleteTodo={onDeleteTodo}
         onChangeChecked={handleChangeChecked}
+        {...props}
       />
       <GiveUpDialog
         isOpen={isOpen}

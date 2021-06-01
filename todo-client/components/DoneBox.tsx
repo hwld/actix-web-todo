@@ -29,9 +29,9 @@ type Props = {
   className?: string;
   dones: Todo[];
   todoFontSize: string;
-  onDeleteTodo: (req: DeleteTodoRequest) => void;
+  onDeleteTodo: (req: DeleteTodoRequest) => Promise<void>;
   onDeleteMultipleTodo: (req: DeleteMultipleTodosRequest) => void;
-  onUpdateTodo: (req: UpdateTodoRequest) => void;
+  onUpdateTodo: (req: UpdateTodoRequest) => Promise<void>;
 };
 
 const IconButton = styled(ChakraIconButton)`

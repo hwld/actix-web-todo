@@ -3,13 +3,13 @@ import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { TodoAPI } from "../api/todo";
 import { useTodos } from "../hooks/useTodos";
+import { MotionPropsWithChakra } from "../types/ChakraMotionProps";
 import { AddTodoForm } from "./AddTodoForm";
 import { ChangeFontSizeCommandTodo } from "./ChangeFontSizeCommandTodo";
 import { DoneBox } from "./DoneBox";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { GiveUpAllCommandTodo } from "./GiveUpAllCommandTodo";
 import { Header } from "./Header";
-import { MotionBox } from "./MotionBox";
 import { TodoItem } from "./TodoItem";
 
 type Props = {
@@ -46,23 +46,41 @@ const Component: React.FC<Props> = ({ todoApi }) => {
       <VStack
         mt={{ base: 6, lg: 12 }}
         mb={{ base: "150px", lg: 12 }}
+        mx="auto"
+        // アニメーションのためにwではなくpaddingを設定する
+        px={{ base: "2.5%", lg: "25%" }}
+        w="100%"
         spacing={6}
         align="center"
         overflowX="clip"
       >
         <AnimatePresence>
           {todos.map((todo) => {
-            const todoProps: ChakraProps = {
+            const todoStyles: ChakraProps = {
+              w: "100%",
               bg: "gray.600",
               borderRadius: "10px",
               fontSize: `${todoFontSize}rem`,
+            };
+            const todoMotion: MotionPropsWithChakra = {
+              layout: true,
+              initial: { x: -300 },
+              animate: { x: 0 },
+              // checkBoxのアニメーションのあとに終了したい。現在checkBoxのアニメーションの時間に合わせて指定する。
+              // どうにかしてcheckBoxのアニメーションの時間を外側から指定できたらいいんだけど・・・
+              exit: {
+                opacity: 0,
+                transition: { duration: 0.2 },
+              },
             };
             let todoElement: JSX.Element;
             switch (todo.title) {
               case giveUpAllText: {
                 todoElement = (
                   <GiveUpAllCommandTodo
-                    {...todoProps}
+                    key={todo.id}
+                    {...todoStyles}
+                    {...todoMotion}
                     todo={todo}
                     allTodos={todos}
                     onDeleteTodo={deleteTodo}
@@ -75,7 +93,9 @@ const Component: React.FC<Props> = ({ todoApi }) => {
               case changeFontSizeText: {
                 todoElement = (
                   <ChangeFontSizeCommandTodo
-                    {...todoProps}
+                    key={todo.id}
+                    {...todoStyles}
+                    {...todoMotion}
                     defaultFontSize={todoFontSize}
                     todo={todo}
                     onDeleteTodo={deleteTodo}
@@ -88,7 +108,9 @@ const Component: React.FC<Props> = ({ todoApi }) => {
               default: {
                 todoElement = (
                   <TodoItem
-                    {...todoProps}
+                    key={todo.id}
+                    {...todoStyles}
+                    {...todoMotion}
                     todo={todo}
                     onDeleteTodo={deleteTodo}
                     onChangeChecked={updateTodo}
@@ -98,23 +120,7 @@ const Component: React.FC<Props> = ({ todoApi }) => {
               }
             }
 
-            return (
-              <MotionBox
-                key={todo.id}
-                w={{ base: "95%", lg: "50%" }}
-                layout
-                initial={{ x: -300 }}
-                animate={{ x: 0 }}
-                // checkBoxのアニメーションのあとに終了したい。現在checkBoxのアニメーションの時間に合わせて指定する。
-                // どうにかしてcheckBoxのアニメーションの時間を外側から指定できたらいいんだけど・・・
-                exit={{
-                  opacity: 0,
-                  transition: { duration: 0.2 },
-                }}
-              >
-                {todoElement}
-              </MotionBox>
-            );
+            return todoElement;
           })}
         </AnimatePresence>
       </VStack>
