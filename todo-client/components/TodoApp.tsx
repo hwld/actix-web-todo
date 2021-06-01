@@ -1,11 +1,12 @@
-import { ChakraProps, useToast, VStack } from "@chakra-ui/react";
+import { ChakraProps, VStack } from "@chakra-ui/react";
 import { AnimatePresence } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { TodoAPI } from "../api/todo";
 import { useTodos } from "../hooks/useTodos";
 import { AddTodoForm } from "./AddTodoForm";
 import { ChangeFontSizeCommandTodo } from "./ChangeFontSizeCommandTodo";
 import { DoneBox } from "./DoneBox";
+import { ErrorBoundary } from "./ErrorBoundary";
 import { GiveUpAllCommandTodo } from "./GiveUpAllCommandTodo";
 import { Header } from "./Header";
 import { MotionBox } from "./MotionBox";
@@ -25,25 +26,14 @@ const Component: React.FC<Props> = ({ todoApi }) => {
     deleteMultipleTodos,
     updateTodo,
   } = useTodos(todoApi);
-  const toast = useToast();
+
   const [todoFontSize, setTodoFontSize] = useState(1);
 
   const giveUpAllText = '"すべてを諦める"';
   const changeFontSizeText = '"文字の大きさを変える"';
 
-  useEffect(() => {
-    if (error) {
-      toast({
-        title: error.title,
-        description: error.description,
-        status: "error",
-        isClosable: true,
-      });
-    }
-  }, [error, toast]);
-
   return (
-    <>
+    <ErrorBoundary error={error}>
       <Header mx="auto" bg="gray.900" />
       <AddTodoForm
         position="sticky"
@@ -139,7 +129,7 @@ const Component: React.FC<Props> = ({ todoApi }) => {
         onDeleteMultipleTodo={deleteMultipleTodos}
         onUpdateTodo={updateTodo}
       />
-    </>
+    </ErrorBoundary>
   );
 };
 

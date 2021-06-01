@@ -9,7 +9,7 @@ import {
   UpdateTodoRequest,
 } from "../api/todo";
 
-type UseTodosError = { title: string; description: string };
+export type UseTodosError = { title: string; description: string };
 
 export type UseTodosResult = {
   todos: Todo[];
