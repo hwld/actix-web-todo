@@ -1,16 +1,13 @@
-import { ChakraProps, VStack } from "@chakra-ui/react";
+import { VStack } from "@chakra-ui/react";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { TodoAPI } from "../api/todo";
 import { useTodos } from "../hooks/useTodos";
-import { MotionPropsWithChakra } from "../types/ChakraMotionProps";
 import { AddTodoForm } from "./AddTodoForm";
-import { ChangeFontSizeCommandTodo } from "./ChangeFontSizeCommandTodo";
 import { DoneBox } from "./DoneBox";
 import { ErrorBoundary } from "./ErrorBoundary";
-import { GiveUpAllCommandTodo } from "./GiveUpAllCommandTodo";
 import { Header } from "./Header";
-import { TodoItem } from "./TodoItem";
+import { TodoItemFactory } from "./TodoItemFactory";
 
 type Props = {
   todoApi: TodoAPI;
@@ -28,9 +25,6 @@ const Component: React.FC<Props> = ({ todoApi }) => {
   } = useTodos(todoApi);
 
   const [todoFontSize, setTodoFontSize] = useState(1);
-
-  const giveUpAllText = '"すべてを諦める"';
-  const changeFontSizeText = '"文字の大きさを変える"';
 
   return (
     <ErrorBoundary error={error}>
@@ -55,73 +49,18 @@ const Component: React.FC<Props> = ({ todoApi }) => {
         overflowX="clip"
       >
         <AnimatePresence>
-          {todos.map((todo) => {
-            const todoStyles: ChakraProps = {
-              w: "100%",
-              bg: "gray.600",
-              borderRadius: "10px",
-              fontSize: `${todoFontSize}rem`,
-            };
-            const todoMotion: MotionPropsWithChakra = {
-              layout: true,
-              initial: { x: -300 },
-              animate: { x: 0 },
-              // checkBoxのアニメーションのあとに終了したい。現在checkBoxのアニメーションの時間に合わせて指定する。
-              // どうにかしてcheckBoxのアニメーションの時間を外側から指定できたらいいんだけど・・・
-              exit: {
-                opacity: 0,
-                transition: { duration: 0.2 },
-              },
-            };
-            let todoElement: JSX.Element;
-            switch (todo.title) {
-              case giveUpAllText: {
-                todoElement = (
-                  <GiveUpAllCommandTodo
-                    key={todo.id}
-                    {...todoStyles}
-                    {...todoMotion}
-                    todo={todo}
-                    allTodos={todos}
-                    onDeleteTodo={deleteTodo}
-                    onDeleteMultiple={deleteMultipleTodos}
-                    onChangeChecked={updateTodo}
-                  />
-                );
-                break;
-              }
-              case changeFontSizeText: {
-                todoElement = (
-                  <ChangeFontSizeCommandTodo
-                    key={todo.id}
-                    {...todoStyles}
-                    {...todoMotion}
-                    defaultFontSize={todoFontSize}
-                    todo={todo}
-                    onDeleteTodo={deleteTodo}
-                    onChangeFontSize={setTodoFontSize}
-                    onChangeChecked={updateTodo}
-                  />
-                );
-                break;
-              }
-              default: {
-                todoElement = (
-                  <TodoItem
-                    key={todo.id}
-                    {...todoStyles}
-                    {...todoMotion}
-                    todo={todo}
-                    onDeleteTodo={deleteTodo}
-                    onChangeChecked={updateTodo}
-                  />
-                );
-                break;
-              }
-            }
-
-            return todoElement;
-          })}
+          {todos.map((todo) => (
+            <TodoItemFactory
+              key={todo.id}
+              todo={todo}
+              allTodos={todos}
+              onDeleteTodo={deleteTodo}
+              onDeleteMultiple={deleteMultipleTodos}
+              onChangeChecked={updateTodo}
+              todoFontSize={todoFontSize}
+              setTodoFontSize={setTodoFontSize}
+            />
+          ))}
         </AnimatePresence>
       </VStack>
 
