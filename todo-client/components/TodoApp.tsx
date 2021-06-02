@@ -13,7 +13,7 @@ type Props = {
   todoApi: TodoAPI;
 };
 
-const Component: React.FC<Props> = ({ todoApi }) => {
+const Component: React.VFC<Props> = ({ todoApi }) => {
   const {
     todos,
     dones,
@@ -69,10 +69,12 @@ const Component: React.FC<Props> = ({ todoApi }) => {
         right={{ base: "20px", lg: "80px" }}
         bottom={{ base: "20px", lg: "50px" }}
         dones={dones}
-        todoFontSize={`${todoFontSize}rem`}
+        allTodos={todos}
         onDeleteTodo={deleteTodo}
         onDeleteMultipleTodo={deleteMultipleTodos}
         onUpdateTodo={updateTodo}
+        todoFontSize={todoFontSize}
+        setTodoFontSize={setTodoFontSize}
       />
     </ErrorBoundary>
   );

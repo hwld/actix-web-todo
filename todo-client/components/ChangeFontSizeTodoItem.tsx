@@ -11,7 +11,7 @@ type Props = CommonTodoItemProps & {
   onChangeFontSize: (fontSize: number) => void;
 };
 
-const Component: React.FC<Props> = ({
+const Component: React.VFC<Props> = ({
   className,
   todo,
   onDeleteTodo,

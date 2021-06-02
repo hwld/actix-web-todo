@@ -14,7 +14,7 @@ type Props = CommonTodoItemProps & {
   onDeleteMultiple: (req: DeleteMultipleTodosRequest) => void;
 };
 
-const Component: React.FC<Props> = ({
+const Component: React.VFC<Props> = ({
   className,
   todo,
   allTodos,

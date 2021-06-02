@@ -14,7 +14,7 @@ type Props = {
   onGiveUpAll: () => void;
 };
 
-const Component: React.FC<Props> = ({ isOpen, onClose, onGiveUpAll }) => {
+const Component: React.VFC<Props> = ({ isOpen, onClose, onGiveUpAll }) => {
   const handleClickGiveUpButton = () => {
     onGiveUpAll();
     onClose();

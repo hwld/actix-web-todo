@@ -15,9 +15,9 @@ type Props = {
   onChangeChecked: CommonTodoItemProps["onChangeChecked"];
   todoFontSize: number;
   setTodoFontSize: (fontSize: number) => void;
-};
+} & MotionPropsWithChakra;
 
-const Component: React.FC<Props> = ({
+const Component: React.VFC<Props> = ({
   className,
   todo,
   allTodos,
@@ -26,12 +26,12 @@ const Component: React.FC<Props> = ({
   onChangeChecked,
   todoFontSize,
   setTodoFontSize,
+  ...motionProps
 }) => {
   const giveUpAllText = "`すべてを諦める`";
   const changeFontSizeText = "`文字の大きさを変える`";
 
   const todoStyles: ChakraProps = {
-    w: "100%",
     bg: "gray.600",
     borderRadius: "10px",
     fontSize: `${todoFontSize}rem`,
@@ -44,8 +44,9 @@ const Component: React.FC<Props> = ({
     // どうにかしてcheckBoxのアニメーションの時間を外側から指定できたらいいんだけど・・・
     exit: {
       opacity: 0,
-      transition: { duration: 0.2 },
+      transition: { duration: 0.3 },
     },
+    ...motionProps,
   };
 
   switch (todo.title) {

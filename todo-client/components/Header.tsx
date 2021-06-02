@@ -3,7 +3,7 @@ import React from "react";
 
 type Props = { className?: string };
 
-const Component: React.FC<Props> = ({ className }) => {
+const Component: React.VFC<Props> = ({ className }) => {
   return (
     <Box px={4} pt={10} className={className}>
       <Box

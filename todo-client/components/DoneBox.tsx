@@ -15,23 +15,24 @@ import {
 import styled from "@emotion/styled";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
-import { MdPlaylistAddCheck } from "react-icons/md";
 import {
   DeleteMultipleTodosRequest,
   DeleteTodoRequest,
   Todo,
   UpdateTodoRequest,
 } from "../api/todo";
-import { MotionBox } from "./MotionBox";
-import { CommonTodoItem } from "./CommonTodoItem";
+import { DoneBoxIcon } from "./DoneBoxIcon";
+import { TodoItem } from "./TodoItem";
 
 type Props = {
   className?: string;
   dones: Todo[];
-  todoFontSize: string;
+  allTodos: Todo[];
   onDeleteTodo: (req: DeleteTodoRequest) => Promise<void>;
-  onDeleteMultipleTodo: (req: DeleteMultipleTodosRequest) => void;
+  onDeleteMultipleTodo: (req: DeleteMultipleTodosRequest) => Promise<void>;
   onUpdateTodo: (req: UpdateTodoRequest) => Promise<void>;
+  todoFontSize: number;
+  setTodoFontSize: (fontSize: number) => void;
 };
 
 const IconButton = styled(ChakraIconButton)`
@@ -41,13 +42,15 @@ const IconButton = styled(ChakraIconButton)`
   }
 `;
 
-const Component: React.FC<Props> = ({
+const Component: React.VFC<Props> = ({
   className,
   dones,
-  todoFontSize,
+  allTodos,
   onDeleteTodo,
   onDeleteMultipleTodo,
   onUpdateTodo,
+  todoFontSize,
+  setTodoFontSize,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -62,26 +65,7 @@ const Component: React.FC<Props> = ({
         colorScheme="blue"
         boxSize="100px"
         borderRadius="50%"
-        icon={
-          <>
-            <MdPlaylistAddCheck />
-            <chakra.span
-              pos="absolute"
-              top="0"
-              right="0"
-              transform="translate(30%, -30%)"
-              px={3}
-              py={1}
-              fontSize="2xl"
-              fontWeight="bold"
-              bg="yellow.300"
-              color="black"
-              rounded="full"
-            >
-              {dones.length}
-            </chakra.span>
-          </>
-        }
+        icon={<DoneBoxIcon>{dones.length}</DoneBoxIcon>}
         onClick={onOpen}
       />
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -99,29 +83,20 @@ const Component: React.FC<Props> = ({
           <ModalHeader>完了した作業</ModalHeader>
           <ModalCloseButton />
           <ModalBody overflow="auto" p={0}>
-            <VStack my={10} spacing={6}>
+            <VStack my={10} spacing={6} w="100%" px="5%">
               <AnimatePresence>
                 {dones.map((done) => (
-                  <MotionBox
+                  <TodoItem
                     key={done.id}
-                    layout
-                    w="90%"
-                    // checkBoxのアニメーションのあとに終了したい。現在checkBoxのアニメーションの時間に合わせて指定する。
-                    // どうにかしてcheckBoxのアニメーションの時間を外側から指定できたらいいんだけど・・・
-                    exit={{
-                      opacity: 0,
-                      transition: { duration: 0.2 },
-                    }}
-                  >
-                    <CommonTodoItem
-                      bg="gray.600"
-                      borderRadius="10px"
-                      fontSize={todoFontSize}
-                      todo={done}
-                      onDeleteTodo={onDeleteTodo}
-                      onChangeChecked={onUpdateTodo}
-                    />
-                  </MotionBox>
+                    initial={{ x: 0 }}
+                    todo={done}
+                    allTodos={allTodos}
+                    onDeleteTodo={onDeleteTodo}
+                    onDeleteMultiple={onDeleteMultipleTodo}
+                    onChangeChecked={onUpdateTodo}
+                    todoFontSize={todoFontSize}
+                    setTodoFontSize={setTodoFontSize}
+                  />
                 ))}
               </AnimatePresence>
             </VStack>

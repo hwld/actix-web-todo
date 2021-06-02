@@ -8,7 +8,7 @@ type Props = {
   iconWidth?: string;
 };
 
-const Component: React.FC<Omit<CheckboxProps, keyof Props> & Props> = (
+const Component: React.VFC<Omit<CheckboxProps, keyof Props> & Props> = (
   props
 ) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

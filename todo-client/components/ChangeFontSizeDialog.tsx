@@ -21,7 +21,7 @@ type Props = {
   onChangeFontSize: (fontSize: number) => void;
 };
 
-const Component: React.FC<Props> = ({
+const Component: React.VFC<Props> = ({
   isOpen,
   onClose,
   defaultFontSize,

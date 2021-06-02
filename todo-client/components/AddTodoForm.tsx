@@ -15,7 +15,7 @@ type Props = {
   onAddTodo: (req: CreateTodoRequest) => void;
 };
 
-const Component: React.FC<Props> = ({ className, onAddTodo }) => {
+const Component: React.VFC<Props> = ({ className, onAddTodo }) => {
   const [title, setTitle] = useState("");
 
   const handleChangeTitle = (e: ChangeEvent<HTMLInputElement>) => {

@@ -12,7 +12,7 @@ export type CommonTodoItemProps = {
   onChangeChecked: (req: UpdateTodoRequest) => Promise<void>;
 } & MotionPropsWithChakra;
 
-const Component: React.FC<CommonTodoItemProps> = ({
+const Component: React.VFC<CommonTodoItemProps> = ({
   className,
   todo,
   onDeleteTodo,
