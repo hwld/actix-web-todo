@@ -7,9 +7,9 @@ import {
   UpdateTodoRequest,
 } from "../api/todo";
 import { GiveUpDialog } from "./GiveUpDialog";
-import { TodoItem, TodoItemProps } from "./TodoItem";
+import { CommonTodoItem, CommonTodoItemProps } from "./CommonTodoItem";
 
-type Props = TodoItemProps & {
+type Props = CommonTodoItemProps & {
   allTodos: Todo[];
   onDeleteMultiple: (req: DeleteMultipleTodosRequest) => void;
 };
@@ -39,7 +39,7 @@ const Component: React.FC<Props> = ({
 
   return (
     <>
-      <TodoItem
+      <CommonTodoItem
         className={className}
         todo={todo}
         onDeleteTodo={onDeleteTodo}
@@ -55,4 +55,4 @@ const Component: React.FC<Props> = ({
   );
 };
 
-export const GiveUpAllCommandTodo = chakra(Component);
+export const GiveUpAllTodoItem = chakra(Component);

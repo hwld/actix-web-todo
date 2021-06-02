@@ -3,9 +3,10 @@ import { chakra } from "@chakra-ui/react";
 import React from "react";
 import { UpdateTodoRequest } from "../api/todo";
 import { ChangeFontSizeDialog } from "./ChangeFontSizeDialog";
-import { TodoItem, TodoItemProps } from "./TodoItem";
+import { CommonTodoItem, CommonTodoItemProps } from "./CommonTodoItem";
 
-type Props = TodoItemProps & {
+type Props = CommonTodoItemProps & {
+  className?: string;
   defaultFontSize: number;
   onChangeFontSize: (fontSize: number) => void;
 };
@@ -36,7 +37,7 @@ const Component: React.FC<Props> = ({
 
   return (
     <>
-      <TodoItem
+      <CommonTodoItem
         className={className}
         todo={todo}
         onDeleteTodo={onDeleteTodo}
@@ -53,4 +54,4 @@ const Component: React.FC<Props> = ({
   );
 };
 
-export const ChangeFontSizeCommandTodo = chakra(Component);
+export const ChangeFontSizeTodoItem = chakra(Component);

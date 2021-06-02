@@ -23,7 +23,7 @@ import {
   UpdateTodoRequest,
 } from "../api/todo";
 import { MotionBox } from "./MotionBox";
-import { TodoItem } from "./TodoItem";
+import { CommonTodoItem } from "./CommonTodoItem";
 
 type Props = {
   className?: string;
@@ -113,7 +113,7 @@ const Component: React.FC<Props> = ({
                       transition: { duration: 0.2 },
                     }}
                   >
-                    <TodoItem
+                    <CommonTodoItem
                       bg="gray.600"
                       borderRadius="10px"
                       fontSize={todoFontSize}

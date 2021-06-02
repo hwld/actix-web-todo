@@ -1,65 +1,98 @@
-import { chakra, CloseButton, Flex, Text } from "@chakra-ui/react";
-import { motion } from "framer-motion";
-import React, { ComponentProps, SyntheticEvent, useMemo } from "react";
-import { DeleteTodoRequest, Todo, UpdateTodoRequest } from "../api/todo";
+import { chakra, ChakraProps } from "@chakra-ui/react";
+import React from "react";
+import { DeleteMultipleTodosRequest, Todo } from "../api/todo";
 import { MotionPropsWithChakra } from "../types/ChakraMotionProps";
-import { MotionBox } from "./MotionBox";
-import { TodoCheckBox } from "./TodoCheckBox";
+import { ChangeFontSizeTodoItem } from "./ChangeFontSizeTodoItem";
+import { GiveUpAllTodoItem } from "./GiveUpAllTodoItem";
+import { CommonTodoItem, CommonTodoItemProps } from "./CommonTodoItem";
 
 type Props = {
   className?: string;
   todo: Todo;
-  onDeleteTodo: (req: DeleteTodoRequest) => Promise<void>;
-  onChangeChecked: (req: UpdateTodoRequest) => Promise<void>;
-} & MotionPropsWithChakra;
+  allTodos: Todo[];
+  onDeleteTodo: CommonTodoItemProps["onDeleteTodo"];
+  onDeleteMultiple: (req: DeleteMultipleTodosRequest) => Promise<void>;
+  onChangeChecked: CommonTodoItemProps["onChangeChecked"];
+  todoFontSize: number;
+  setTodoFontSize: (fontSize: number) => void;
+};
 
 const Component: React.FC<Props> = ({
   className,
   todo,
+  allTodos,
   onDeleteTodo,
+  onDeleteMultiple,
   onChangeChecked,
-  motionTransition,
-  ...motionProps
+  todoFontSize,
+  setTodoFontSize,
 }) => {
-  const title = useMemo(() => {
-    if (todo.isDone) {
-      return <del>{todo.title}</del>;
+  const giveUpAllText = "`すべてを諦める`";
+  const changeFontSizeText = "`文字の大きさを変える`";
+
+  const todoStyles: ChakraProps = {
+    w: "100%",
+    bg: "gray.600",
+    borderRadius: "10px",
+    fontSize: `${todoFontSize}rem`,
+  };
+  const todoMotion: MotionPropsWithChakra = {
+    layout: true,
+    initial: { x: -300 },
+    animate: { x: 0 },
+    // checkBoxのアニメーションのあとに終了したい。現在checkBoxのアニメーションの時間に合わせて指定する。
+    // どうにかしてcheckBoxのアニメーションの時間を外側から指定できたらいいんだけど・・・
+    exit: {
+      opacity: 0,
+      transition: { duration: 0.2 },
+    },
+  };
+
+  switch (todo.title) {
+    case giveUpAllText: {
+      return (
+        <GiveUpAllTodoItem
+          key={todo.id}
+          {...todoStyles}
+          {...todoMotion}
+          className={className}
+          todo={todo}
+          allTodos={allTodos}
+          onDeleteTodo={onDeleteTodo}
+          onDeleteMultiple={onDeleteMultiple}
+          onChangeChecked={onChangeChecked}
+        />
+      );
     }
-    return todo.title;
-  }, [todo.isDone, todo.title]);
-
-  const handleChangeChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChangeChecked({ id: todo.id, isDone: e.target.checked });
-  };
-
-  const handleClickCloseButton = (e: SyntheticEvent) => {
-    e.stopPropagation();
-    onDeleteTodo({ id: todo.id });
-  };
-
-  return (
-    <MotionBox {...motionProps} transition={motionTransition} w="100%" h="100%">
-      <Flex className={className} p={5} justify="space-between" align="center">
-        <TodoCheckBox
-          width="70px"
-          height="70px"
-          borderRadius="50%"
-          iconWidth="30px"
-          isChecked={todo.isDone}
-          onChange={handleChangeChecked}
+    case changeFontSizeText: {
+      return (
+        <ChangeFontSizeTodoItem
+          key={todo.id}
+          {...todoStyles}
+          {...todoMotion}
+          className={className}
+          defaultFontSize={todoFontSize}
+          todo={todo}
+          onDeleteTodo={onDeleteTodo}
+          onChangeFontSize={setTodoFontSize}
+          onChangeChecked={onChangeChecked}
         />
-        <Text fontWeight="bold" px={5} w="full" wordBreak="break-all">
-          {title}
-        </Text>
-        <CloseButton
-          color="red.500"
-          onClick={handleClickCloseButton}
-          alignSelf="flex-start"
+      );
+    }
+    default: {
+      return (
+        <CommonTodoItem
+          key={todo.id}
+          className={className}
+          {...todoStyles}
+          {...todoMotion}
+          todo={todo}
+          onDeleteTodo={onDeleteTodo}
+          onChangeChecked={onChangeChecked}
         />
-      </Flex>
-    </MotionBox>
-  );
+      );
+    }
+  }
 };
 
-export const TodoItem = chakra<React.FC<Props>>(Component);
-export type TodoItemProps = ComponentProps<typeof TodoItem>;
+export const TodoItem = chakra(Component);

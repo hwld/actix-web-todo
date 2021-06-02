@@ -7,7 +7,7 @@ import { AddTodoForm } from "./AddTodoForm";
 import { DoneBox } from "./DoneBox";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { Header } from "./Header";
-import { TodoItemFactory } from "./TodoItemFactory";
+import { TodoItem } from "./TodoItem";
 
 type Props = {
   todoApi: TodoAPI;
@@ -50,7 +50,7 @@ const Component: React.FC<Props> = ({ todoApi }) => {
       >
         <AnimatePresence>
           {todos.map((todo) => (
-            <TodoItemFactory
+            <TodoItem
               key={todo.id}
               todo={todo}
               allTodos={todos}
