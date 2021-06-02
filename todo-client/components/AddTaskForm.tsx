@@ -8,14 +8,14 @@ import {
   VisuallyHidden,
 } from "@chakra-ui/react";
 import React, { ChangeEvent, SyntheticEvent, useState } from "react";
-import { CreateTodoRequest } from "../api/todo";
+import { CreateTaskRequest } from "../api/task";
 
 type Props = {
   className?: string;
-  onAddTodo: (req: CreateTodoRequest) => void;
+  onAddTask: (req: CreateTaskRequest) => void;
 };
 
-const Component: React.VFC<Props> = ({ className, onAddTodo }) => {
+const Component: React.VFC<Props> = ({ className, onAddTask }) => {
   const [title, setTitle] = useState("");
 
   const handleChangeTitle = (e: ChangeEvent<HTMLInputElement>) => {
@@ -25,7 +25,7 @@ const Component: React.VFC<Props> = ({ className, onAddTodo }) => {
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
     setTitle("");
-    onAddTodo({ title });
+    onAddTask({ title });
   };
 
   return (
@@ -40,11 +40,11 @@ const Component: React.VFC<Props> = ({ className, onAddTodo }) => {
         onSubmit={handleSubmit}
       >
         <GridItem as="label" colSpan={{ base: "auto", lg: 4 }}>
-          <VisuallyHidden>todo</VisuallyHidden>
+          <VisuallyHidden>task</VisuallyHidden>
           <Input
             mt={0}
             size="lg"
-            placeholder="Enter todo..."
+            placeholder="Enter task..."
             required={true}
             value={title}
             onChange={handleChangeTitle}
@@ -66,4 +66,4 @@ const Component: React.VFC<Props> = ({ className, onAddTodo }) => {
   );
 };
 
-export const AddTodoForm = chakra(Component);
+export const AddTaskForm = chakra(Component);

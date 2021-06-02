@@ -1,40 +1,40 @@
 import { VStack } from "@chakra-ui/react";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
-import { TodoAPI } from "../api/todo";
-import { useTodos } from "../hooks/useTodos";
-import { AddTodoForm } from "./AddTodoForm";
+import { TaskAPI } from "../api/task";
+import { useTasks } from "../hooks/useTasks";
+import { AddTaskForm } from "./AddTaskForm";
 import { DoneBox } from "./DoneBox";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { Header } from "./Header";
-import { TodoItem } from "./TodoItem";
+import { TaskItem } from "./TaskItem";
 
 type Props = {
-  todoApi: TodoAPI;
+  taskApi: TaskAPI;
 };
 
-const Component: React.VFC<Props> = ({ todoApi }) => {
+const Component: React.VFC<Props> = ({ taskApi }) => {
   const {
     todos,
     dones,
     error,
-    addTodo,
-    deleteTodo,
-    deleteMultipleTodos,
-    updateTodo,
-  } = useTodos(todoApi);
+    addTask,
+    deleteTask,
+    deleteMultipleTasks,
+    updateTask,
+  } = useTasks(taskApi);
 
-  const [todoFontSize, setTodoFontSize] = useState(1);
+  const [taskFontSize, setTaskFontSize] = useState(1);
 
   return (
     <ErrorBoundary error={error}>
       <Header mx="auto" bg="gray.900" />
-      <AddTodoForm
+      <AddTaskForm
         position="sticky"
         top="0"
         bg="gray.900"
         zIndex={1}
-        onAddTodo={addTodo}
+        onAddTask={addTask}
       />
 
       <VStack
@@ -50,15 +50,15 @@ const Component: React.VFC<Props> = ({ todoApi }) => {
       >
         <AnimatePresence>
           {todos.map((todo) => (
-            <TodoItem
+            <TaskItem
               key={todo.id}
-              todo={todo}
+              task={todo}
               allTodos={todos}
-              onDeleteTodo={deleteTodo}
-              onDeleteMultiple={deleteMultipleTodos}
-              onChangeChecked={updateTodo}
-              todoFontSize={todoFontSize}
-              setTodoFontSize={setTodoFontSize}
+              onDeleteTask={deleteTask}
+              onDeleteMultiple={deleteMultipleTasks}
+              onChangeChecked={updateTask}
+              taskFontSize={taskFontSize}
+              setTaskFontSize={setTaskFontSize}
             />
           ))}
         </AnimatePresence>
@@ -70,14 +70,14 @@ const Component: React.VFC<Props> = ({ todoApi }) => {
         bottom={{ base: "20px", lg: "50px" }}
         dones={dones}
         allTodos={todos}
-        onDeleteTodo={deleteTodo}
-        onDeleteMultipleTodo={deleteMultipleTodos}
-        onUpdateTodo={updateTodo}
-        todoFontSize={todoFontSize}
-        setTodoFontSize={setTodoFontSize}
+        onDeleteDone={deleteTask}
+        onDeleteMultipleDone={deleteMultipleTasks}
+        onUpdateDone={updateTask}
+        taskFontSize={taskFontSize}
+        setTaskFontSize={setTaskFontSize}
       />
     </ErrorBoundary>
   );
 };
 
-export const TodoApp = Component;
+export const TaskApp = Component;

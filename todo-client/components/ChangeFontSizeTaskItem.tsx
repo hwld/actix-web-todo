@@ -1,11 +1,11 @@
 import { useDisclosure } from "@chakra-ui/hooks";
 import { chakra } from "@chakra-ui/react";
 import React from "react";
-import { UpdateTodoRequest } from "../api/todo";
+import { UpdateTaskRequest } from "../api/task";
 import { ChangeFontSizeDialog } from "./ChangeFontSizeDialog";
-import { CommonTodoItem, CommonTodoItemProps } from "./CommonTodoItem";
+import { CommonTaskItem, CommonTaskItemProps } from "./CommonTaskItem";
 
-type Props = CommonTodoItemProps & {
+type Props = CommonTaskItemProps & {
   className?: string;
   defaultFontSize: number;
   onChangeFontSize: (fontSize: number) => void;
@@ -13,8 +13,8 @@ type Props = CommonTodoItemProps & {
 
 const Component: React.VFC<Props> = ({
   className,
-  todo,
-  onDeleteTodo,
+  task,
+  onDeleteTask,
   onChangeChecked,
   defaultFontSize,
   onChangeFontSize,
@@ -22,7 +22,7 @@ const Component: React.VFC<Props> = ({
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleChangeChecked = async (req: UpdateTodoRequest) => {
+  const handleChangeChecked = async (req: UpdateTaskRequest) => {
     if (req.isDone) {
       onOpen();
     }
@@ -31,16 +31,16 @@ const Component: React.VFC<Props> = ({
   const handleChangeFontSize = async (fontSize: number) => {
     onChangeFontSize(fontSize);
 
-    await onChangeChecked({ id: todo.id, isDone: true });
-    onDeleteTodo({ id: todo.id });
+    await onChangeChecked({ id: task.id, isDone: true });
+    onDeleteTask({ id: task.id });
   };
 
   return (
     <>
-      <CommonTodoItem
+      <CommonTaskItem
         className={className}
-        todo={todo}
-        onDeleteTodo={onDeleteTodo}
+        task={task}
+        onDeleteTask={onDeleteTask}
         onChangeChecked={handleChangeChecked}
         {...props}
       />
@@ -54,4 +54,4 @@ const Component: React.VFC<Props> = ({
   );
 };
 
-export const ChangeFontSizeTodoItem = chakra(Component);
+export const ChangeFontSizeTaskItem = chakra(Component);

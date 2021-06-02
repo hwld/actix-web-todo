@@ -17,7 +17,7 @@ const Component: React.VFC<Omit<CheckboxProps, keyof Props> & Props> = (
   return <Checkbox {...rest} />;
 };
 
-export const TodoCheckBox = styled(Component)<Props>`
+export const TaskCheckBox = styled(Component)<Props>`
   & > span {
     width: ${(props) => props.width || "20px"};
     height: ${(props) => props.height || "20px"};

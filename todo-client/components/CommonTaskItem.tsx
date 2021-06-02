@@ -1,50 +1,50 @@
 import { chakra, CloseButton, Flex, Text } from "@chakra-ui/react";
 import React, { SyntheticEvent, useMemo } from "react";
-import { DeleteTodoRequest, Todo, UpdateTodoRequest } from "../api/todo";
+import { DeleteTaskRequest, Task, UpdateTaskRequest } from "../api/task";
 import { MotionPropsWithChakra } from "../types/ChakraMotionProps";
 import { MotionBox } from "./MotionBox";
-import { TodoCheckBox } from "./TodoCheckBox";
+import { TaskCheckBox } from "./TaskCheckBox";
 
-export type CommonTodoItemProps = {
+export type CommonTaskItemProps = {
   className?: string;
-  todo: Todo;
-  onDeleteTodo: (req: DeleteTodoRequest) => Promise<void>;
-  onChangeChecked: (req: UpdateTodoRequest) => Promise<void>;
+  task: Task;
+  onDeleteTask: (req: DeleteTaskRequest) => Promise<void>;
+  onChangeChecked: (req: UpdateTaskRequest) => Promise<void>;
 } & MotionPropsWithChakra;
 
-const Component: React.VFC<CommonTodoItemProps> = ({
+const Component: React.VFC<CommonTaskItemProps> = ({
   className,
-  todo,
-  onDeleteTodo,
+  task,
+  onDeleteTask,
   onChangeChecked,
   motionTransition,
   ...motionProps
 }) => {
   const title = useMemo(() => {
-    if (todo.isDone) {
-      return <del>{todo.title}</del>;
+    if (task.isDone) {
+      return <del>{task.title}</del>;
     }
-    return todo.title;
-  }, [todo.isDone, todo.title]);
+    return task.title;
+  }, [task.isDone, task.title]);
 
   const handleChangeChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChangeChecked({ id: todo.id, isDone: e.target.checked });
+    onChangeChecked({ id: task.id, isDone: e.target.checked });
   };
 
   const handleClickCloseButton = (e: SyntheticEvent) => {
     e.stopPropagation();
-    onDeleteTodo({ id: todo.id });
+    onDeleteTask({ id: task.id });
   };
 
   return (
     <MotionBox {...motionProps} transition={motionTransition} w="100%" h="100%">
       <Flex className={className} p={5} justify="space-between" align="center">
-        <TodoCheckBox
+        <TaskCheckBox
           width="70px"
           height="70px"
           borderRadius="50%"
           iconWidth="30px"
-          isChecked={todo.isDone}
+          isChecked={task.isDone}
           onChange={handleChangeChecked}
         />
         <Text fontWeight="bold" px={5} w="full" wordBreak="break-all">
@@ -60,4 +60,4 @@ const Component: React.VFC<CommonTodoItemProps> = ({
   );
 };
 
-export const CommonTodoItem = chakra(Component);
+export const CommonTaskItem = chakra(Component);

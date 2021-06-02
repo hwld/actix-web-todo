@@ -16,23 +16,24 @@ import styled from "@emotion/styled";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
 import {
-  DeleteMultipleTodosRequest,
-  DeleteTodoRequest,
+  DeleteMultipleTasksRequest,
+  DeleteTaskRequest,
+  Done,
   Todo,
-  UpdateTodoRequest,
-} from "../api/todo";
+  UpdateTaskRequest,
+} from "../api/task";
 import { DoneBoxIcon } from "./DoneBoxIcon";
-import { TodoItem } from "./TodoItem";
+import { TaskItem } from "./TaskItem";
 
 type Props = {
   className?: string;
-  dones: Todo[];
+  dones: Done[];
   allTodos: Todo[];
-  onDeleteTodo: (req: DeleteTodoRequest) => Promise<void>;
-  onDeleteMultipleTodo: (req: DeleteMultipleTodosRequest) => Promise<void>;
-  onUpdateTodo: (req: UpdateTodoRequest) => Promise<void>;
-  todoFontSize: number;
-  setTodoFontSize: (fontSize: number) => void;
+  onDeleteDone: (req: DeleteTaskRequest) => Promise<void>;
+  onDeleteMultipleDone: (req: DeleteMultipleTasksRequest) => Promise<void>;
+  onUpdateDone: (req: UpdateTaskRequest) => Promise<void>;
+  taskFontSize: number;
+  setTaskFontSize: (fontSize: number) => void;
 };
 
 const IconButton = styled(ChakraIconButton)`
@@ -46,22 +47,22 @@ const Component: React.VFC<Props> = ({
   className,
   dones,
   allTodos,
-  onDeleteTodo,
-  onDeleteMultipleTodo,
-  onUpdateTodo,
-  todoFontSize,
-  setTodoFontSize,
+  onDeleteDone,
+  onDeleteMultipleDone,
+  onUpdateDone,
+  taskFontSize,
+  setTaskFontSize,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleDeleteAllDones = async () => {
-    onDeleteMultipleTodo({ ids: dones.map((d) => d.id) });
+    onDeleteMultipleDone({ ids: dones.map((d) => d.id) });
   };
 
   return (
     <chakra.span className={className}>
       <IconButton
-        aria-label="checked todo"
+        aria-label="checked task"
         colorScheme="blue"
         boxSize="100px"
         borderRadius="50%"
@@ -86,16 +87,16 @@ const Component: React.VFC<Props> = ({
             <VStack my={10} spacing={6} w="100%" px="5%">
               <AnimatePresence>
                 {dones.map((done) => (
-                  <TodoItem
+                  <TaskItem
                     key={done.id}
                     initial={{ x: 0 }}
-                    todo={done}
+                    task={done}
                     allTodos={allTodos}
-                    onDeleteTodo={onDeleteTodo}
-                    onDeleteMultiple={onDeleteMultipleTodo}
-                    onChangeChecked={onUpdateTodo}
-                    todoFontSize={todoFontSize}
-                    setTodoFontSize={setTodoFontSize}
+                    onDeleteTask={onDeleteDone}
+                    onDeleteMultiple={onDeleteMultipleDone}
+                    onChangeChecked={onUpdateDone}
+                    taskFontSize={taskFontSize}
+                    setTaskFontSize={setTaskFontSize}
                   />
                 ))}
               </AnimatePresence>

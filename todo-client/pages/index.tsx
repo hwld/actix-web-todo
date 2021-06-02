@@ -1,10 +1,10 @@
 import { NextPage } from "next";
 import React from "react";
-import { todoAPI } from "../api/todo";
-import { TodoApp } from "../components/TodoApp";
+import { taskAPI } from "../api/task";
+import { TaskApp } from "../components/TaskApp";
 
 const Home: NextPage = () => {
-  return <TodoApp todoApi={todoAPI} />;
+  return <TaskApp taskApi={taskAPI} />;
 };
 
 export default Home;

@@ -1,32 +1,44 @@
 const API_SERVER = process.env.NEXT_PUBLIC_API_SERVER;
 
-export type Todo = {
+export type Task = {
   id: string;
   title: string;
   isDone: boolean;
 };
 
-export type CreateTodoRequest = Pick<Todo, "title">;
+export type Todo = {
+  isDone: false;
+  id: string;
+  title: string;
+};
 
-export type DeleteTodoRequest = Pick<Todo, "id">;
+export type Done = {
+  isDone: true;
+  id: string;
+  title: string;
+};
 
-export type DeleteMultipleTodosRequest = { ids: Todo["id"][] };
+export type CreateTaskRequest = Pick<Task, "title">;
 
-export type UpdateTodoRequest = Pick<Todo, "id" | "isDone">;
+export type DeleteTaskRequest = Pick<Task, "id">;
 
-const getAll = async (): Promise<Todo[]> => {
+export type DeleteMultipleTasksRequest = { ids: Task["id"][] };
+
+export type UpdateTaskRequest = Pick<Task, "id" | "isDone">;
+
+const getAll = async (): Promise<Task[]> => {
   const res = await fetch(`${API_SERVER}/todos`);
 
   if (!res.ok) {
-    throw new Error("Todoを読み込むことができませんでした。");
+    throw new Error("Taskを読み込むことができませんでした。");
   }
 
   const data = await res.json();
 
-  return data as Todo[];
+  return data as Task[];
 };
 
-const create = async (req: CreateTodoRequest): Promise<Todo> => {
+const create = async (req: CreateTaskRequest): Promise<Task> => {
   const res = await fetch(`${API_SERVER}/todos`, {
     method: "POST",
     headers: {
@@ -36,14 +48,14 @@ const create = async (req: CreateTodoRequest): Promise<Todo> => {
   });
 
   if (!res.ok) {
-    throw new Error("Todoを作成することができませんでした。");
+    throw new Error("Taskを作成することができませんでした。");
   }
 
   const data = await res.json();
-  return data as Todo;
+  return data as Task;
 };
 
-const deleteTodo = async (req: DeleteTodoRequest): Promise<void> => {
+const deleteTask = async (req: DeleteTaskRequest): Promise<void> => {
   const res = await fetch(`${API_SERVER}/todos/${req.id}`, {
     method: "DELETE",
     headers: {
@@ -52,12 +64,12 @@ const deleteTodo = async (req: DeleteTodoRequest): Promise<void> => {
   });
 
   if (!res.ok) {
-    throw new Error("Todoを削除することができませんでした。");
+    throw new Error("Taskを削除することができませんでした。");
   }
 };
 
 const deleteMultiple = async (
-  req: DeleteMultipleTodosRequest
+  req: DeleteMultipleTasksRequest
 ): Promise<void> => {
   const res = await fetch(`${API_SERVER}/todos/delete`, {
     method: "POST",
@@ -68,7 +80,7 @@ const deleteMultiple = async (
   });
 
   if (!res.ok) {
-    throw new Error("複数のTodosを削除することができませんでした。");
+    throw new Error("複数のTasksを削除することができませんでした。");
   }
 };
 
@@ -78,11 +90,11 @@ const deleteAll = async (): Promise<void> => {
   });
 
   if (!res.ok) {
-    throw new Error("すべてのTodoを削除することができませんでした。");
+    throw new Error("すべてのTaskを削除することができませんでした。");
   }
 };
 
-const update = async (r: UpdateTodoRequest): Promise<void> => {
+const update = async (r: UpdateTaskRequest): Promise<void> => {
   const { id, ...req } = r;
 
   const res = await fetch(`${API_SERVER}/todos/${id}`, {
@@ -94,23 +106,23 @@ const update = async (r: UpdateTodoRequest): Promise<void> => {
   });
 
   if (!res.ok) {
-    throw new Error("Todoを更新することができませんでした。");
+    throw new Error("Taskを更新することができませんでした。");
   }
 };
 
-export type TodoAPI = {
+export type TaskAPI = {
   getAll: typeof getAll;
   create: typeof create;
-  delete: typeof deleteTodo;
+  delete: typeof deleteTask;
   deleteMultiple: typeof deleteMultiple;
   deleteAll: typeof deleteAll;
   update: typeof update;
 };
 
-export const todoAPI: TodoAPI = {
+export const taskAPI: TaskAPI = {
   getAll,
   create,
-  delete: deleteTodo,
+  delete: deleteTask,
   deleteMultiple,
   deleteAll,
   update,

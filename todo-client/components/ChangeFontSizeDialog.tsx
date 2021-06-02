@@ -43,10 +43,10 @@ const Component: React.VFC<Props> = ({
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Todoのフォントサイズの変更</ModalHeader>
+        <ModalHeader>Taskのフォントサイズの変更</ModalHeader>
         <ModalBody>
           <Text textAlign="center" fontSize={`${fontSize}rem`}>
-            サンプルTodoテキスト
+            サンプルTaskテキスト
           </Text>
           <Slider
             aria-label="fontSize-slider"

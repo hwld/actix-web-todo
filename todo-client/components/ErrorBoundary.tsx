@@ -1,9 +1,9 @@
 import { useToast } from "@chakra-ui/react";
 import React, { useEffect } from "react";
-import { UseTodosError } from "../hooks/useTodos";
+import { UseTasksError } from "../hooks/useTasks";
 
 type Props = {
-  error: UseTodosError | undefined;
+  error: UseTasksError | undefined;
 };
 
 const Component: React.FC<Props> = ({ children, error }) => {

@@ -1,42 +1,42 @@
 import { chakra, ChakraProps } from "@chakra-ui/react";
 import React from "react";
-import { DeleteMultipleTodosRequest, Todo } from "../api/todo";
+import { DeleteMultipleTasksRequest, Task, Todo } from "../api/task";
 import { MotionPropsWithChakra } from "../types/ChakraMotionProps";
-import { ChangeFontSizeTodoItem } from "./ChangeFontSizeTodoItem";
+import { ChangeFontSizeTaskItem } from "./ChangeFontSizeTaskItem";
+import { CommonTaskItem, CommonTaskItemProps } from "./CommonTaskItem";
 import { GiveUpAllTodoItem } from "./GiveUpAllTodoItem";
-import { CommonTodoItem, CommonTodoItemProps } from "./CommonTodoItem";
 
 type Props = {
   className?: string;
-  todo: Todo;
+  task: Task;
   allTodos: Todo[];
-  onDeleteTodo: CommonTodoItemProps["onDeleteTodo"];
-  onDeleteMultiple: (req: DeleteMultipleTodosRequest) => Promise<void>;
-  onChangeChecked: CommonTodoItemProps["onChangeChecked"];
-  todoFontSize: number;
-  setTodoFontSize: (fontSize: number) => void;
+  onDeleteTask: CommonTaskItemProps["onDeleteTask"];
+  onDeleteMultiple: (req: DeleteMultipleTasksRequest) => Promise<void>;
+  onChangeChecked: CommonTaskItemProps["onChangeChecked"];
+  taskFontSize: number;
+  setTaskFontSize: (fontSize: number) => void;
 } & MotionPropsWithChakra;
 
 const Component: React.VFC<Props> = ({
   className,
-  todo,
+  task,
   allTodos,
-  onDeleteTodo,
+  onDeleteTask,
   onDeleteMultiple,
   onChangeChecked,
-  todoFontSize,
-  setTodoFontSize,
+  taskFontSize,
+  setTaskFontSize,
   ...motionProps
 }) => {
   const giveUpAllText = "`すべてを諦める`";
   const changeFontSizeText = "`文字の大きさを変える`";
 
-  const todoStyles: ChakraProps = {
+  const taskStyles: ChakraProps = {
     bg: "gray.600",
     borderRadius: "10px",
-    fontSize: `${todoFontSize}rem`,
+    fontSize: `${taskFontSize}rem`,
   };
-  const todoMotion: MotionPropsWithChakra = {
+  const taskMotion: MotionPropsWithChakra = {
     layout: true,
     initial: { x: -300 },
     animate: { x: 0 },
@@ -49,17 +49,17 @@ const Component: React.VFC<Props> = ({
     ...motionProps,
   };
 
-  switch (todo.title) {
+  switch (task.title) {
     case giveUpAllText: {
       return (
         <GiveUpAllTodoItem
-          key={todo.id}
-          {...todoStyles}
-          {...todoMotion}
+          key={task.id}
+          {...taskStyles}
+          {...taskMotion}
           className={className}
-          todo={todo}
+          task={task}
           allTodos={allTodos}
-          onDeleteTodo={onDeleteTodo}
+          onDeleteTask={onDeleteTask}
           onDeleteMultiple={onDeleteMultiple}
           onChangeChecked={onChangeChecked}
         />
@@ -67,28 +67,28 @@ const Component: React.VFC<Props> = ({
     }
     case changeFontSizeText: {
       return (
-        <ChangeFontSizeTodoItem
-          key={todo.id}
-          {...todoStyles}
-          {...todoMotion}
+        <ChangeFontSizeTaskItem
+          key={task.id}
+          {...taskStyles}
+          {...taskMotion}
           className={className}
-          defaultFontSize={todoFontSize}
-          todo={todo}
-          onDeleteTodo={onDeleteTodo}
-          onChangeFontSize={setTodoFontSize}
+          defaultFontSize={taskFontSize}
+          task={task}
+          onDeleteTask={onDeleteTask}
+          onChangeFontSize={setTaskFontSize}
           onChangeChecked={onChangeChecked}
         />
       );
     }
     default: {
       return (
-        <CommonTodoItem
-          key={todo.id}
+        <CommonTaskItem
+          key={task.id}
           className={className}
-          {...todoStyles}
-          {...todoMotion}
-          todo={todo}
-          onDeleteTodo={onDeleteTodo}
+          {...taskStyles}
+          {...taskMotion}
+          task={task}
+          onDeleteTask={onDeleteTask}
           onChangeChecked={onChangeChecked}
         />
       );
@@ -96,4 +96,4 @@ const Component: React.VFC<Props> = ({
   }
 };
 
-export const TodoItem = chakra(Component);
+export const TaskItem = chakra(Component);
