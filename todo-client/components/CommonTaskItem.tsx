@@ -1,5 +1,5 @@
 import { chakra, CloseButton, Flex, Text } from "@chakra-ui/react";
-import React, { SyntheticEvent, useMemo } from "react";
+import React, { SyntheticEvent, useMemo, useState } from "react";
 import { DeleteTaskRequest, Task, UpdateTaskRequest } from "../api/task";
 import { MotionPropsWithChakra } from "../types/ChakraMotionProps";
 import { MotionBox } from "./MotionBox";
@@ -20,6 +20,8 @@ const Component: React.VFC<CommonTaskItemProps> = ({
   motionTransition,
   ...motionProps
 }) => {
+  const [isChecked, setIsChecked] = useState(task.isDone);
+
   const title = useMemo(() => {
     if (task.isDone) {
       return <del>{task.title}</del>;
@@ -27,7 +29,11 @@ const Component: React.VFC<CommonTaskItemProps> = ({
     return task.title;
   }, [task.isDone, task.title]);
 
-  const handleChangeChecked = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeChecked = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setIsChecked(e.target.checked);
+
     onChangeChecked({ id: task.id, isDone: e.target.checked });
   };
 
@@ -38,13 +44,20 @@ const Component: React.VFC<CommonTaskItemProps> = ({
 
   return (
     <MotionBox {...motionProps} transition={motionTransition} w="100%" h="100%">
-      <Flex className={className} p={5} justify="space-between" align="center">
+      <Flex
+        className={className}
+        p={5}
+        justify="space-between"
+        align="center"
+        bg="gray.600"
+        borderRadius="10px"
+      >
         <TaskCheckBox
           width="70px"
           height="70px"
           borderRadius="50%"
           iconWidth="30px"
-          isChecked={task.isDone}
+          isChecked={isChecked}
           onChange={handleChangeChecked}
         />
         <Text fontWeight="bold" px={5} w="full" wordBreak="break-all">

@@ -5,13 +5,12 @@ import { UpdateTaskRequest } from "../api/task";
 import { ChangeFontSizeDialog } from "./ChangeFontSizeDialog";
 import { CommonTaskItem, CommonTaskItemProps } from "./CommonTaskItem";
 
-type Props = CommonTaskItemProps & {
-  className?: string;
+export type ChangeFontSizeTodoItemProps = CommonTaskItemProps & {
   defaultFontSize: number;
   onChangeFontSize: (fontSize: number) => void;
 };
 
-const Component: React.VFC<Props> = ({
+const Component: React.VFC<ChangeFontSizeTodoItemProps> = ({
   className,
   task,
   onDeleteTask,
@@ -54,4 +53,4 @@ const Component: React.VFC<Props> = ({
   );
 };
 
-export const ChangeFontSizeTaskItem = chakra(Component);
+export const ChangeFontSizeTodoItem = chakra(Component);

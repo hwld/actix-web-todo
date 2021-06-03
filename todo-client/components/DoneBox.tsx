@@ -19,21 +19,18 @@ import {
   DeleteMultipleTasksRequest,
   DeleteTaskRequest,
   Done,
-  Todo,
   UpdateTaskRequest,
 } from "../api/task";
 import { DoneBoxIcon } from "./DoneBoxIcon";
-import { TaskItem } from "./TaskItem";
+import { DoneItem } from "./DoneItem";
 
 type Props = {
   className?: string;
   dones: Done[];
-  allTodos: Todo[];
   onDeleteDone: (req: DeleteTaskRequest) => Promise<void>;
   onDeleteMultipleDone: (req: DeleteMultipleTasksRequest) => Promise<void>;
   onUpdateDone: (req: UpdateTaskRequest) => Promise<void>;
   taskFontSize: number;
-  setTaskFontSize: (fontSize: number) => void;
 };
 
 const IconButton = styled(ChakraIconButton)`
@@ -46,12 +43,10 @@ const IconButton = styled(ChakraIconButton)`
 const Component: React.VFC<Props> = ({
   className,
   dones,
-  allTodos,
   onDeleteDone,
   onDeleteMultipleDone,
   onUpdateDone,
   taskFontSize,
-  setTaskFontSize,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -87,16 +82,15 @@ const Component: React.VFC<Props> = ({
             <VStack my={10} spacing={6} w="100%" px="5%">
               <AnimatePresence>
                 {dones.map((done) => (
-                  <TaskItem
+                  <DoneItem
                     key={done.id}
-                    initial={{ x: 0 }}
-                    task={done}
-                    allTodos={allTodos}
+                    done={done}
                     onDeleteTask={onDeleteDone}
-                    onDeleteMultiple={onDeleteMultipleDone}
                     onChangeChecked={onUpdateDone}
-                    taskFontSize={taskFontSize}
-                    setTaskFontSize={setTaskFontSize}
+                    initial={{ x: 0 }}
+                    fontSize={`${taskFontSize}rem`}
+                    layout
+                    exit={{ x: "-300px", opacity: 0 }}
                   />
                 ))}
               </AnimatePresence>

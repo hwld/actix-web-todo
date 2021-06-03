@@ -9,12 +9,12 @@ import {
 import { GiveUpDialog } from "./GiveUpDialog";
 import { CommonTaskItem, CommonTaskItemProps } from "./CommonTaskItem";
 
-type Props = CommonTaskItemProps & {
+export type GiveUpAllTodoItemProps = CommonTaskItemProps & {
   allTodos: Todo[];
   onDeleteMultiple: (req: DeleteMultipleTasksRequest) => void;
 };
 
-const Component: React.VFC<Props> = ({
+const Component: React.VFC<GiveUpAllTodoItemProps> = ({
   className,
   task,
   allTodos,

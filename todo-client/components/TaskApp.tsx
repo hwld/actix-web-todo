@@ -7,7 +7,7 @@ import { AddTaskForm } from "./AddTaskForm";
 import { DoneBox } from "./DoneBox";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { Header } from "./Header";
-import { TaskItem } from "./TaskItem";
+import { TodoItem } from "./TodoItem";
 
 type Props = {
   taskApi: TaskAPI;
@@ -50,15 +50,19 @@ const Component: React.VFC<Props> = ({ taskApi }) => {
       >
         <AnimatePresence>
           {todos.map((todo) => (
-            <TaskItem
+            <TodoItem
               key={todo.id}
-              task={todo}
+              todo={todo}
               allTodos={todos}
               onDeleteTask={deleteTask}
-              onDeleteMultiple={deleteMultipleTasks}
               onChangeChecked={updateTask}
+              onDeleteMultiple={deleteMultipleTasks}
               taskFontSize={taskFontSize}
-              setTaskFontSize={setTaskFontSize}
+              onChangeFontSize={setTaskFontSize}
+              layout
+              initial={{ x: -300 }}
+              animate={{ x: 0 }}
+              exit={{ opacity: 0 }}
             />
           ))}
         </AnimatePresence>
