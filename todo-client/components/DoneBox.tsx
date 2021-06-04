@@ -15,21 +15,17 @@ import {
 import styled from "@emotion/styled";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
-import {
-  DeleteMultipleTasksRequest,
-  DeleteTaskRequest,
-  Done,
-  UpdateTaskRequest,
-} from "../api/task";
+import { DeleteMultipleTasksRequest, Done } from "../api/task";
+import { ErrorType } from "../hooks/useTasks";
 import { DoneBoxIcon } from "./DoneBoxIcon";
-import { DoneItem } from "./DoneItem";
+import { DoneItem, DoneItemProps } from "./DoneItem";
 
 type Props = {
   className?: string;
   dones: Done[];
-  onDeleteDone: (req: DeleteTaskRequest) => Promise<void>;
-  onDeleteMultipleDone: (req: DeleteMultipleTasksRequest) => Promise<void>;
-  onUpdateDone: (req: UpdateTaskRequest) => Promise<void>;
+  onDeleteDone: DoneItemProps["onDeleteTask"];
+  onDeleteMultipleDone: (req: DeleteMultipleTasksRequest) => Promise<ErrorType>;
+  onUpdateDone: DoneItemProps["onChangeChecked"];
   taskFontSize: number;
 };
 

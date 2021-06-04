@@ -2,6 +2,7 @@ import { useDisclosure } from "@chakra-ui/hooks";
 import { chakra } from "@chakra-ui/react";
 import React from "react";
 import { UpdateTaskRequest } from "../api/task";
+import { ErrorType } from "../hooks/useTasks";
 import { ChangeFontSizeDialog } from "./ChangeFontSizeDialog";
 import { CommonTaskItem, CommonTaskItemProps } from "./CommonTaskItem";
 
@@ -21,10 +22,13 @@ const Component: React.VFC<ChangeFontSizeTodoItemProps> = ({
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleChangeChecked = async (req: UpdateTaskRequest) => {
+  const handleChangeChecked = async (
+    req: UpdateTaskRequest
+  ): Promise<ErrorType> => {
     if (req.isDone) {
       onOpen();
     }
+    return "NoError";
   };
 
   const handleChangeFontSize = async (fontSize: number) => {

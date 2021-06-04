@@ -8,6 +8,7 @@ import {
 } from "../api/task";
 import { GiveUpDialog } from "./GiveUpDialog";
 import { CommonTaskItem, CommonTaskItemProps } from "./CommonTaskItem";
+import { ErrorType } from "../hooks/useTasks";
 
 export type GiveUpAllTodoItemProps = CommonTaskItemProps & {
   allTodos: Todo[];
@@ -25,10 +26,13 @@ const Component: React.VFC<GiveUpAllTodoItemProps> = ({
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleChangeChecked = async (req: UpdateTaskRequest) => {
+  const handleChangeChecked = async (
+    req: UpdateTaskRequest
+  ): Promise<ErrorType> => {
     if (req.isDone) {
       onOpen();
     }
+    return "NoError";
   };
 
   const handleGiveUpAll = async () => {

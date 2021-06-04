@@ -1,6 +1,7 @@
 import { chakra, CloseButton, Flex, Text } from "@chakra-ui/react";
 import React, { SyntheticEvent, useMemo, useState } from "react";
 import { DeleteTaskRequest, Task, UpdateTaskRequest } from "../api/task";
+import { ErrorType } from "../hooks/useTasks";
 import { MotionPropsWithChakra } from "../types/ChakraMotionProps";
 import { MotionBox } from "./MotionBox";
 import { TaskCheckBox } from "./TaskCheckBox";
@@ -8,8 +9,8 @@ import { TaskCheckBox } from "./TaskCheckBox";
 export type CommonTaskItemProps = {
   className?: string;
   task: Task;
-  onDeleteTask: (req: DeleteTaskRequest) => Promise<void>;
-  onChangeChecked: (req: UpdateTaskRequest) => Promise<void>;
+  onDeleteTask: (req: DeleteTaskRequest) => Promise<ErrorType>;
+  onChangeChecked: (req: UpdateTaskRequest) => Promise<ErrorType>;
 } & MotionPropsWithChakra;
 
 const Component: React.VFC<CommonTaskItemProps> = ({
@@ -34,7 +35,14 @@ const Component: React.VFC<CommonTaskItemProps> = ({
   ) => {
     setIsChecked(e.target.checked);
 
-    onChangeChecked({ id: task.id, isDone: e.target.checked });
+    const errorType = await onChangeChecked({
+      id: task.id,
+      isDone: e.target.checked,
+    });
+
+    if (errorType === "Error") {
+      setIsChecked(!e.target.checked);
+    }
   };
 
   const handleClickCloseButton = (e: SyntheticEvent) => {

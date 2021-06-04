@@ -3,9 +3,9 @@ import React from "react";
 import { Done } from "../api/task";
 import { CommonTaskItem, CommonTaskItemProps } from "./CommonTaskItem";
 
-type Props = Omit<CommonTaskItemProps, "task"> & { done: Done };
+export type DoneItemProps = Omit<CommonTaskItemProps, "task"> & { done: Done };
 
-const Component: React.FC<Props> = ({ className, ...others }) => {
+const Component: React.FC<DoneItemProps> = ({ className, ...others }) => {
   const { done, onDeleteTask, onChangeChecked, ...motionProps } = others;
 
   return (
