@@ -3,10 +3,11 @@ import React, { useEffect } from "react";
 import { UseTasksError } from "../hooks/useTasks";
 
 type Props = {
+  children: React.ReactNode;
   error: UseTasksError | undefined;
 };
 
-const Component: React.FC<Props> = ({ children, error }) => {
+const Component: React.VFC<Props> = ({ children, error }) => {
   const toast = useToast();
 
   useEffect(() => {

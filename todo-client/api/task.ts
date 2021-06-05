@@ -5,25 +5,26 @@ export type Task = {
   title: string;
   isDone: boolean;
 };
-
-export type Todo = {
-  isDone: false;
-  id: string;
-  title: string;
-};
-
-export type Done = {
-  isDone: true;
-  id: string;
-  title: string;
-};
+export type Todo = Extract<
+  {
+    id: string;
+    title: string;
+    isDone: false;
+  },
+  Task
+>;
+export type Done = Extract<
+  {
+    id: string;
+    title: string;
+    isDone: true;
+  },
+  Task
+>;
 
 export type CreateTaskRequest = Pick<Task, "title">;
-
 export type DeleteTaskRequest = Pick<Task, "id">;
-
 export type DeleteMultipleTasksRequest = { ids: Task["id"][] };
-
 export type UpdateTaskRequest = Pick<Task, "id" | "isDone">;
 
 const getAll = async (): Promise<Task[]> => {
@@ -110,16 +111,7 @@ const update = async (r: UpdateTaskRequest): Promise<void> => {
   }
 };
 
-export type TaskAPI = {
-  getAll: typeof getAll;
-  create: typeof create;
-  delete: typeof deleteTask;
-  deleteMultiple: typeof deleteMultiple;
-  deleteAll: typeof deleteAll;
-  update: typeof update;
-};
-
-export const taskAPI: TaskAPI = {
+export const taskAPI = {
   getAll,
   create,
   delete: deleteTask,
@@ -127,3 +119,5 @@ export const taskAPI: TaskAPI = {
   deleteAll,
   update,
 };
+
+export type TaskAPI = typeof taskAPI;

@@ -2,7 +2,9 @@ import { chakra } from "@chakra-ui/react";
 import React from "react";
 import { MdPlaylistAddCheck } from "react-icons/md";
 
-const Component: React.FC = ({ children }) => {
+type Props = { children: React.ReactNode };
+
+const Component: React.VFC<Props> = ({ children }) => {
   return (
     <>
       <MdPlaylistAddCheck />

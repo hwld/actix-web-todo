@@ -5,7 +5,7 @@ import { CommonTaskItem, CommonTaskItemProps } from "./CommonTaskItem";
 
 export type DoneItemProps = Omit<CommonTaskItemProps, "task"> & { done: Done };
 
-const Component: React.FC<DoneItemProps> = ({ className, ...others }) => {
+const Component: React.VFC<DoneItemProps> = ({ className, ...others }) => {
   const { done, onDeleteTask, onChangeChecked, ...motionProps } = others;
 
   return (

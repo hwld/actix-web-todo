@@ -18,7 +18,11 @@ type Props = Omit<
   "task"
 > & { todo: Todo };
 
-const Component: React.FC<Props> = ({ className, taskFontSize, ...others }) => {
+const Component: React.VFC<Props> = ({
+  className,
+  taskFontSize,
+  ...others
+}) => {
   const {
     todo,
     allTodos,
