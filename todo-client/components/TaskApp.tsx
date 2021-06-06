@@ -1,7 +1,8 @@
 import { VStack } from "@chakra-ui/react";
 import { AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
+import React from "react";
 import { TaskAPI } from "../api/task";
+import { useTaskFontSize } from "../hooks/useTaskFontSize";
 import { useTasks } from "../hooks/useTasks";
 import { AddTaskForm } from "./AddTaskForm";
 import { DoneBox } from "./DoneBox";
@@ -24,7 +25,7 @@ const Component: React.VFC<Props> = ({ taskApi }) => {
     updateTask,
   } = useTasks(taskApi);
 
-  const [taskFontSize, setTaskFontSize] = useState(1);
+  const [taskFontSize, setTaskFontSize] = useTaskFontSize();
 
   return (
     <ErrorBoundary error={error}>
@@ -57,7 +58,7 @@ const Component: React.VFC<Props> = ({ taskApi }) => {
               onDeleteTask={deleteTask}
               onChangeChecked={updateTask}
               onDeleteMultiple={deleteMultipleTasks}
-              taskFontSize={taskFontSize}
+              todoFontSize={taskFontSize}
               onChangeFontSize={setTaskFontSize}
               layout
               initial={{ x: -300 }}

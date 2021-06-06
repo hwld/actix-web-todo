@@ -9,18 +9,16 @@ import { CommonTaskItem, CommonTaskItemProps } from "./CommonTaskItem";
 import { GiveUpAllTodoItem, GiveUpAllTodoItemProps } from "./GiveUpAllTodoItem";
 
 type Props = Omit<
-  {
-    taskFontSize: number;
-  } & GiveUpAllTodoItemProps &
+  GiveUpAllTodoItemProps &
     // taskFontSizeを使う
     Omit<ChangeFontSizeTodoItemProps, "defaultFontSize"> &
     CommonTaskItemProps,
   "task"
-> & { todo: Todo };
+> & { todo: Todo; todoFontSize: number };
 
 const Component: React.VFC<Props> = ({
   className,
-  taskFontSize,
+  todoFontSize,
   ...others
 }) => {
   const {
@@ -46,7 +44,7 @@ const Component: React.VFC<Props> = ({
           onDeleteTask={onDeleteTask}
           onDeleteMultiple={onDeleteMultiple}
           onChangeChecked={onChangeChecked}
-          fontSize={`${taskFontSize}rem`}
+          fontSize={`${todoFontSize}rem`}
           {...motionProps}
         />
       );
@@ -55,12 +53,12 @@ const Component: React.VFC<Props> = ({
       return (
         <ChangeFontSizeTodoItem
           className={className}
-          defaultFontSize={taskFontSize}
+          defaultFontSize={todoFontSize}
           task={todo}
           onDeleteTask={onDeleteTask}
           onChangeFontSize={onChangeFontSize}
           onChangeChecked={onChangeChecked}
-          fontSize={`${taskFontSize}rem`}
+          fontSize={`${todoFontSize}rem`}
           {...motionProps}
         />
       );
@@ -72,7 +70,7 @@ const Component: React.VFC<Props> = ({
           task={todo}
           onDeleteTask={onDeleteTask}
           onChangeChecked={onChangeChecked}
-          fontSize={`${taskFontSize}rem`}
+          fontSize={`${todoFontSize}rem`}
           {...motionProps}
         />
       );
