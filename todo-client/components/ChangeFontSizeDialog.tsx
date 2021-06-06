@@ -13,29 +13,34 @@ import {
   Text,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
+import { extractNumberPart, TaskFontSize } from "../hooks/useTaskFontSize";
 
-type Props = {
+export type ChangeFontSizeDialogProps = {
   isOpen: boolean;
   onClose: () => void;
-  defaultFontSize: number;
-  onChangeFontSize: (fontSize: number) => void;
+  defaultFontSize: TaskFontSize;
+  onChangeFontSize: (fontSize: TaskFontSize) => void;
 };
 
-const Component: React.VFC<Props> = ({
+const Component: React.VFC<ChangeFontSizeDialogProps> = ({
   isOpen,
   onClose,
   defaultFontSize,
   onChangeFontSize,
 }) => {
-  const [fontSize, setFontSize] = useState(defaultFontSize);
+  const defaultFontSizeNumberPart = extractNumberPart(defaultFontSize);
+  const [fontSizeNumber, setFontSizeNumber] = useState(
+    defaultFontSizeNumberPart
+  );
+  const fontSize: TaskFontSize = `${fontSizeNumber}rem` as const;
 
   const cancel = () => {
-    setFontSize(defaultFontSize);
+    setFontSizeNumber(defaultFontSizeNumberPart);
     onClose();
   };
 
   const handleChangeFontSize = () => {
-    onChangeFontSize(fontSize);
+    onChangeFontSize(`${fontSizeNumber}rem` as const);
     onClose();
   };
 
@@ -45,13 +50,13 @@ const Component: React.VFC<Props> = ({
       <ModalContent>
         <ModalHeader>Taskのフォントサイズの変更</ModalHeader>
         <ModalBody>
-          <Text textAlign="center" fontSize={`${fontSize}rem`}>
+          <Text textAlign="center" fontSize={`${fontSize}`}>
             サンプルTaskテキスト
           </Text>
           <Slider
             aria-label="fontSize-slider"
-            value={fontSize}
-            onChange={setFontSize}
+            value={fontSizeNumber}
+            onChange={setFontSizeNumber}
             min={1}
             max={5}
             step={0.1}

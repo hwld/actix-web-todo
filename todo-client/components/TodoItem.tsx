@@ -1,6 +1,7 @@
-import { chakra } from "@chakra-ui/react";
+import { chakra, ChakraProps } from "@chakra-ui/react";
 import React from "react";
 import { Todo } from "../api/task";
+import { TaskFontSize } from "../hooks/useTaskFontSize";
 import {
   ChangeFontSizeTodoItem,
   ChangeFontSizeTodoItemProps,
@@ -14,7 +15,7 @@ type Props = Omit<
     Omit<ChangeFontSizeTodoItemProps, "defaultFontSize"> &
     CommonTaskItemProps,
   "task"
-> & { todo: Todo; todoFontSize: number };
+> & { todo: Todo; todoFontSize: TaskFontSize };
 
 const Component: React.VFC<Props> = ({
   className,
@@ -44,7 +45,8 @@ const Component: React.VFC<Props> = ({
           onDeleteTask={onDeleteTask}
           onDeleteMultiple={onDeleteMultiple}
           onChangeChecked={onChangeChecked}
-          fontSize={`${todoFontSize}rem`}
+          // 直接渡せない
+          fontSize={`${todoFontSize}`}
           {...motionProps}
         />
       );
@@ -58,7 +60,7 @@ const Component: React.VFC<Props> = ({
           onDeleteTask={onDeleteTask}
           onChangeFontSize={onChangeFontSize}
           onChangeChecked={onChangeChecked}
-          fontSize={`${todoFontSize}rem`}
+          fontSize={`${todoFontSize}`}
           {...motionProps}
         />
       );
@@ -70,7 +72,7 @@ const Component: React.VFC<Props> = ({
           task={todo}
           onDeleteTask={onDeleteTask}
           onChangeChecked={onChangeChecked}
-          fontSize={`${todoFontSize}rem`}
+          fontSize={`${todoFontSize}`}
           {...motionProps}
         />
       );

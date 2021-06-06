@@ -2,13 +2,17 @@ import { useDisclosure } from "@chakra-ui/hooks";
 import { chakra } from "@chakra-ui/react";
 import React from "react";
 import { UpdateTaskRequest } from "../api/task";
+import { TaskFontSize } from "../hooks/useTaskFontSize";
 import { ErrorType } from "../hooks/useTasks";
-import { ChangeFontSizeDialog } from "./ChangeFontSizeDialog";
+import {
+  ChangeFontSizeDialog,
+  ChangeFontSizeDialogProps,
+} from "./ChangeFontSizeDialog";
 import { CommonTaskItem, CommonTaskItemProps } from "./CommonTaskItem";
 
 export type ChangeFontSizeTodoItemProps = CommonTaskItemProps & {
-  defaultFontSize: number;
-  onChangeFontSize: (fontSize: number) => void;
+  defaultFontSize: ChangeFontSizeDialogProps["defaultFontSize"];
+  onChangeFontSize: ChangeFontSizeDialogProps["onChangeFontSize"];
 };
 
 const Component: React.VFC<ChangeFontSizeTodoItemProps> = ({
@@ -31,7 +35,7 @@ const Component: React.VFC<ChangeFontSizeTodoItemProps> = ({
     return "NoError";
   };
 
-  const handleChangeFontSize = async (fontSize: number) => {
+  const handleChangeFontSize = async (fontSize: TaskFontSize) => {
     onChangeFontSize(fontSize);
 
     await onChangeChecked({ id: task.id, isDone: true });

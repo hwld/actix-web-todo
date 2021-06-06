@@ -16,6 +16,7 @@ import styled from "@emotion/styled";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
 import { DeleteMultipleTasksRequest, Done } from "../api/task";
+import { TaskFontSize } from "../hooks/useTaskFontSize";
 import { ErrorType } from "../hooks/useTasks";
 import { DoneBoxIcon } from "./DoneBoxIcon";
 import { DoneItem, DoneItemProps } from "./DoneItem";
@@ -26,7 +27,7 @@ type Props = {
   onDeleteDone: DoneItemProps["onDeleteTask"];
   onDeleteMultipleDone: (req: DeleteMultipleTasksRequest) => Promise<ErrorType>;
   onUpdateDone: DoneItemProps["onChangeChecked"];
-  taskFontSize: number;
+  taskFontSize: TaskFontSize;
 };
 
 const IconButton = styled(ChakraIconButton)`
@@ -84,7 +85,7 @@ const Component: React.VFC<Props> = ({
                     onDeleteTask={onDeleteDone}
                     onChangeChecked={onUpdateDone}
                     initial={{ x: 0 }}
-                    fontSize={`${taskFontSize}rem`}
+                    fontSize={`${taskFontSize}`}
                     layout
                     exit={{ x: "-300px", opacity: 0 }}
                   />
