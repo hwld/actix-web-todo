@@ -1,6 +1,7 @@
-import { chakra, ChakraProps } from "@chakra-ui/react";
+import { chakra } from "@chakra-ui/react";
 import React from "react";
 import { Todo } from "../api/task";
+import { CommandTexts } from "../hooks/useCommandTexts";
 import { TaskFontSize } from "../hooks/useTaskFontSize";
 import {
   ChangeFontSizeTodoItem,
@@ -9,17 +10,22 @@ import {
 import { CommonTaskItem, CommonTaskItemProps } from "./CommonTaskItem";
 import { GiveUpAllTodoItem, GiveUpAllTodoItemProps } from "./GiveUpAllTodoItem";
 
-type Props = Omit<
+type Props = {
+  todo: Todo;
+  todoFontSize: TaskFontSize;
+  commandTexts: CommandTexts;
+} & Omit<
   GiveUpAllTodoItemProps &
     // taskFontSizeを使う
     Omit<ChangeFontSizeTodoItemProps, "defaultFontSize"> &
     CommonTaskItemProps,
   "task"
-> & { todo: Todo; todoFontSize: TaskFontSize };
+>;
 
 const Component: React.VFC<Props> = ({
   className,
   todoFontSize,
+  commandTexts,
   ...others
 }) => {
   const {
@@ -32,11 +38,8 @@ const Component: React.VFC<Props> = ({
     ...motionProps
   } = others;
 
-  const giveUpAllText = "`すべてを諦める`";
-  const changeFontSizeText = "`文字の大きさを変える`";
-
   switch (todo.title) {
-    case giveUpAllText: {
+    case `\`${commandTexts.giveUpAll}\``: {
       return (
         <GiveUpAllTodoItem
           className={className}
@@ -51,7 +54,7 @@ const Component: React.VFC<Props> = ({
         />
       );
     }
-    case changeFontSizeText: {
+    case `\`${commandTexts.changeFontSize}\``: {
       return (
         <ChangeFontSizeTodoItem
           className={className}

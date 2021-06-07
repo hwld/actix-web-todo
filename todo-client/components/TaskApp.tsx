@@ -2,6 +2,7 @@ import { VStack } from "@chakra-ui/react";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
 import { TaskAPI } from "../api/task";
+import { useCommandTexts } from "../hooks/useCommandTexts";
 import { useTaskFontSize } from "../hooks/useTaskFontSize";
 import { useTasks } from "../hooks/useTasks";
 import { AddTaskForm } from "./AddTaskForm";
@@ -26,6 +27,7 @@ const Component: React.VFC<Props> = ({ taskApi }) => {
   } = useTasks(taskApi);
 
   const [taskFontSize, setTaskFontSize] = useTaskFontSize();
+  const [commandText, setCommandText] = useCommandTexts();
 
   return (
     <ErrorBoundary error={error}>
@@ -55,6 +57,7 @@ const Component: React.VFC<Props> = ({ taskApi }) => {
               key={todo.id}
               todo={todo}
               allTodos={todos}
+              commandTexts={commandText}
               onDeleteTask={deleteTask}
               onChangeChecked={updateTask}
               onDeleteMultiple={deleteMultipleTasks}

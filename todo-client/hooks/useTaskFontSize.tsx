@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 
 const TASK_FONT_SIZE_UNIT = "rem";
+
 export type TaskFontSize = `${number}${typeof TASK_FONT_SIZE_UNIT}`;
+
 function isTaskFontSize(value: string): value is TaskFontSize {
   const numberPart = value.substring(
     0,
@@ -20,6 +22,7 @@ function isTaskFontSize(value: string): value is TaskFontSize {
   }
   return false;
 }
+
 export function extractNumberPart(fontSize: TaskFontSize): number {
   const numberPartStr = fontSize.substring(
     0,
