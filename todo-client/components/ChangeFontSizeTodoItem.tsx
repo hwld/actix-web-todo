@@ -1,35 +1,39 @@
 import { useDisclosure } from "@chakra-ui/hooks";
 import { chakra } from "@chakra-ui/react";
 import React from "react";
-import { UpdateTaskRequest } from "../api/task";
 import { TaskFontSize } from "../hooks/useTaskFontSize";
-import { ErrorType } from "../hooks/useTasks";
+import { UseTasksResult } from "../hooks/useTasks";
 import {
   ChangeFontSizeDialog,
   ChangeFontSizeDialogProps,
 } from "./ChangeFontSizeDialog";
-import { CommonTaskItem, CommonTaskItemProps } from "./CommonTaskItem";
+import { TaskItemBase, TaskItemBaseProps } from "./TaskItemBase";
 
-export type ChangeFontSizeTodoItemProps = CommonTaskItemProps & {
+// TaskItemBasePropsのonChangeCheckedはコンポーネントの内側で作成する。
+export type ChangeFontSizeTodoItemProps = Omit<
+  TaskItemBaseProps,
+  "onChangeChecked"
+> & {
   defaultFontSize: ChangeFontSizeDialogProps["defaultFontSize"];
   onChangeFontSize: ChangeFontSizeDialogProps["onChangeFontSize"];
+  onUpdateTodo: UseTasksResult["updateTask"];
 };
 
 const Component: React.VFC<ChangeFontSizeTodoItemProps> = ({
   className,
   task,
   onDeleteTask,
-  onChangeChecked,
+  onUpdateTodo,
   defaultFontSize,
   onChangeFontSize,
   ...props
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleChangeChecked = async (
-    req: UpdateTaskRequest
-  ): Promise<ErrorType> => {
-    if (req.isDone) {
+  const handleChangeChecked: TaskItemBaseProps["onChangeChecked"] = async (
+    isDone
+  ) => {
+    if (isDone) {
       onOpen();
     }
     return "NoError";
@@ -38,13 +42,13 @@ const Component: React.VFC<ChangeFontSizeTodoItemProps> = ({
   const handleChangeFontSize = async (fontSize: TaskFontSize) => {
     onChangeFontSize(fontSize);
 
-    await onChangeChecked({ id: task.id, isDone: true });
+    await onUpdateTodo({ id: task.id, isDone: true });
     onDeleteTask({ id: task.id });
   };
 
   return (
     <>
-      <CommonTaskItem
+      <TaskItemBase
         className={className}
         task={task}
         onDeleteTask={onDeleteTask}

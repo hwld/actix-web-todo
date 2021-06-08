@@ -19,7 +19,7 @@ type Props = {
     // taskFontSizeを使う
     Omit<ChangeFontSizeTodoItemProps, "defaultFontSize"> &
     CommonTaskItemProps,
-  "task"
+  "task" | "onChangeChecked"
 >;
 
 const Component: React.VFC<Props> = ({
@@ -33,7 +33,7 @@ const Component: React.VFC<Props> = ({
     allTodos,
     onDeleteTask,
     onDeleteMultiple,
-    onChangeChecked,
+    onUpdateTodo,
     onChangeFontSize,
     ...motionProps
   } = others;
@@ -47,7 +47,7 @@ const Component: React.VFC<Props> = ({
           allTodos={allTodos}
           onDeleteTask={onDeleteTask}
           onDeleteMultiple={onDeleteMultiple}
-          onChangeChecked={onChangeChecked}
+          onUpdateTodo={onUpdateTodo}
           // 直接渡せない
           fontSize={`${todoFontSize}`}
           {...motionProps}
@@ -61,8 +61,8 @@ const Component: React.VFC<Props> = ({
           defaultFontSize={todoFontSize}
           task={todo}
           onDeleteTask={onDeleteTask}
+          onUpdateTodo={onUpdateTodo}
           onChangeFontSize={onChangeFontSize}
-          onChangeChecked={onChangeChecked}
           fontSize={`${todoFontSize}`}
           {...motionProps}
         />
@@ -74,7 +74,7 @@ const Component: React.VFC<Props> = ({
           className={className}
           task={todo}
           onDeleteTask={onDeleteTask}
-          onChangeChecked={onChangeChecked}
+          onUpdateTodo={onUpdateTodo}
           fontSize={`${todoFontSize}`}
           {...motionProps}
         />

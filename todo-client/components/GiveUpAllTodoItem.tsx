@@ -1,18 +1,18 @@
 import { useDisclosure } from "@chakra-ui/hooks";
 import { chakra } from "@chakra-ui/react";
 import React from "react";
-import {
-  DeleteMultipleTasksRequest,
-  Todo,
-  UpdateTaskRequest,
-} from "../api/task";
+import { DeleteMultipleTasksRequest, Todo } from "../api/task";
 import { GiveUpDialog } from "./GiveUpDialog";
-import { CommonTaskItem, CommonTaskItemProps } from "./CommonTaskItem";
-import { ErrorType } from "../hooks/useTasks";
+import { UseTasksResult } from "../hooks/useTasks";
+import { TaskItemBase, TaskItemBaseProps } from "./TaskItemBase";
 
-export type GiveUpAllTodoItemProps = CommonTaskItemProps & {
+export type GiveUpAllTodoItemProps = Omit<
+  TaskItemBaseProps,
+  "onChangeChecked"
+> & {
   allTodos: Todo[];
   onDeleteMultiple: (req: DeleteMultipleTasksRequest) => void;
+  onUpdateTodo: UseTasksResult["updateTask"];
 };
 
 const Component: React.VFC<GiveUpAllTodoItemProps> = ({
@@ -21,29 +21,29 @@ const Component: React.VFC<GiveUpAllTodoItemProps> = ({
   allTodos,
   onDeleteTask,
   onDeleteMultiple,
-  onChangeChecked,
+  onUpdateTodo,
   ...props
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleChangeChecked = async (
-    req: UpdateTaskRequest
-  ): Promise<ErrorType> => {
-    if (req.isDone) {
+  const handleChangeChecked: TaskItemBaseProps["onChangeChecked"] = async (
+    isDone
+  ) => {
+    if (isDone) {
       onOpen();
     }
     return "NoError";
   };
 
   const handleGiveUpAll = async () => {
-    await onChangeChecked({ id: task.id, isDone: true });
+    await onUpdateTodo({ id: task.id, isDone: true });
 
     onDeleteMultiple({ ids: allTodos.map((t) => t.id) });
   };
 
   return (
     <>
-      <CommonTaskItem
+      <TaskItemBase
         className={className}
         task={task}
         onDeleteTask={onDeleteTask}

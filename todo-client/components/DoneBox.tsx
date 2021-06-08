@@ -26,7 +26,7 @@ type Props = {
   dones: Done[];
   onDeleteDone: DoneItemProps["onDeleteTask"];
   onDeleteMultipleDone: (req: DeleteMultipleTasksRequest) => Promise<ErrorType>;
-  onUpdateDone: DoneItemProps["onChangeChecked"];
+  onUpdateDone: DoneItemProps["onUpdateTodo"];
   taskFontSize: TaskFontSize;
 };
 
@@ -83,7 +83,7 @@ const Component: React.VFC<Props> = ({
                     key={done.id}
                     done={done}
                     onDeleteTask={onDeleteDone}
-                    onChangeChecked={onUpdateDone}
+                    onUpdateTodo={onUpdateDone}
                     initial={{ x: 0 }}
                     fontSize={`${taskFontSize}`}
                     layout

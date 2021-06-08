@@ -59,7 +59,7 @@ const Component: React.VFC<Props> = ({ taskApi }) => {
               allTodos={todos}
               commandTexts={commandText}
               onDeleteTask={deleteTask}
-              onChangeChecked={updateTask}
+              onUpdateTodo={updateTask}
               onDeleteMultiple={deleteMultipleTasks}
               todoFontSize={taskFontSize}
               onChangeFontSize={setTaskFontSize}
