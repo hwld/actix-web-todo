@@ -15,7 +15,7 @@ import {
   ModalOverlay,
 } from "@chakra-ui/modal";
 import React, { useState } from "react";
-import { CommandObjs } from "../hooks/useCommandObjs";
+import { Command, CommandObjs } from "../hooks/useCommandObjs";
 
 export type ChangeCommandTextsDialogProps = {
   isOpen: boolean;
@@ -31,6 +31,19 @@ const Component: React.FC<ChangeCommandTextsDialogProps> = ({
   onChangeCommandTexts,
 }) => {
   const [commandObjs, setCommandObjs] = useState(defaultCommandTexts);
+
+  const changeCommandObj = (command: Command, text: string) => {
+    setCommandObjs((objs) => {
+      const tmp: CommandObjs = [...objs];
+      for (let i = 0; i < tmp.length; i++) {
+        // ここでチェックしてるけど、仮にtmp[i].commandと違うコマンドを入れてもエラーにはならない・・・
+        if (tmp[i].command === command) {
+          tmp[i] = { command, text, description: tmp[i].description };
+        }
+      }
+      return tmp;
+    });
+  };
 
   const handleChangeCommandTexts = () => {
     onChangeCommandTexts(commandObjs);
@@ -56,7 +69,7 @@ const Component: React.FC<ChangeCommandTextsDialogProps> = ({
                   <Input
                     value={obj.text}
                     onChange={({ target: { value } }) => {
-                      console.log(value);
+                      changeCommandObj(obj.command, value);
                     }}
                   />
                   <FormHelperText>{obj.description}</FormHelperText>
