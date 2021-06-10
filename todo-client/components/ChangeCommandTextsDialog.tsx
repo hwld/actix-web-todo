@@ -14,14 +14,14 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/modal";
-import React, { useState } from "react";
-import { Command, CommandObjs } from "../hooks/useCommandObjs";
+import React, { useMemo, useState } from "react";
+import { Command, AllCommandObjs, isCommand } from "../hooks/useCommandObjs";
 
 export type ChangeCommandTextsDialogProps = {
   isOpen: boolean;
   onClose: () => void;
-  defaultCommandTexts: CommandObjs;
-  onChangeCommandTexts: (texts: CommandObjs) => void;
+  defaultCommandTexts: AllCommandObjs;
+  onChangeCommandTexts: (texts: AllCommandObjs) => void;
 };
 
 const Component: React.FC<ChangeCommandTextsDialogProps> = ({
@@ -32,17 +32,25 @@ const Component: React.FC<ChangeCommandTextsDialogProps> = ({
 }) => {
   const [commandObjs, setCommandObjs] = useState(defaultCommandTexts);
 
-  const changeCommandObj = (command: Command, text: string) => {
-    setCommandObjs((objs) => {
-      const tmp: CommandObjs = [...objs];
-      for (let i = 0; i < tmp.length; i++) {
-        // ここでチェックしてるけど、仮にtmp[i].commandと違うコマンドを入れてもエラーにはならない・・・
-        if (tmp[i].command === command) {
-          tmp[i] = { command, text, description: tmp[i].description };
-        }
+  const commandObjList = useMemo(() => {
+    const list: { command: Command; text: string; description: string }[] = [];
+    Object.keys(commandObjs).forEach((command) => {
+      if (isCommand(command)) {
+        list.push({
+          command,
+          text: commandObjs[command].text,
+          description: commandObjs[command].description,
+        });
       }
-      return tmp;
     });
+    return list;
+  }, [commandObjs]);
+
+  const changeCommandObj = (command: Command, text: string) => {
+    setCommandObjs((objs) => ({
+      ...objs,
+      [command]: { text, description: commandObjs[command].description },
+    }));
   };
 
   const handleChangeCommandTexts = () => {
@@ -62,7 +70,7 @@ const Component: React.FC<ChangeCommandTextsDialogProps> = ({
         <ModalHeader>コマンドを変更</ModalHeader>
         <ModalBody>
           <Stack spacing={5}>
-            {commandObjs.map((obj) => {
+            {commandObjList.map((obj) => {
               return (
                 <FormControl key={obj.command}>
                   <FormLabel>{obj.command}</FormLabel>

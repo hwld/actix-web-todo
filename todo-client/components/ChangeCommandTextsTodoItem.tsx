@@ -33,13 +33,14 @@ const Component: React.VFC<ChangeCommandTextsTodoItemProps> = ({
     return "NoError";
   };
 
-  const handleChangeCommandTexts: ChangeCommandTextsDialogProps["onChangeCommandTexts"] =
-    async (texts) => {
-      onChangeCommandTexts(texts);
+  const handleChangeCommandTexts: ChangeCommandTextsDialogProps["onChangeCommandTexts"] = async (
+    texts
+  ) => {
+    onChangeCommandTexts(texts);
 
-      await onUpdateTodo({ id: task.id, isDone: true });
-      onDeleteTask({ id: task.id });
-    };
+    await onUpdateTodo({ id: task.id, isDone: true });
+    onDeleteTask({ id: task.id });
+  };
 
   return (
     <>

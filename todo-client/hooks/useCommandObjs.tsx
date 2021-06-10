@@ -6,23 +6,16 @@ const commandList = [
   "changeCommandObjs",
 ] as const;
 export type Command = typeof commandList[number];
-type CommandObj<T extends Command> = {
-  command: T;
-  text: string;
-  description: string;
+export type AllCommandObjs = {
+  [P in Command]: { text: string; description: string };
 };
-export type CommandObjs = [
-  CommandObj<"giveUpAll">,
-  CommandObj<"changeFontSize">,
-  CommandObj<"changeCommandObjs">
-];
 
 export function isCommand(value: string): value is Command {
   return commandList.includes(value as Command);
 }
 
 // CommandObjsの変更に追従できる気がしないので、後でio-tsを使って自動でユーザー定義型ガードを作りたい。
-function isCommandObjs(value: unknown): value is CommandObjs {
+function isAllCommandObjs(value: unknown): value is AllCommandObjs {
   let u: unknown;
   try {
     if (typeof value === "string") {
@@ -38,74 +31,71 @@ function isCommandObjs(value: unknown): value is CommandObjs {
     return false;
   }
 
-  if (!Array.isArray(u)) {
+  // null | undefined なら、どんなプロパティにアクセスしてもundefinedであることが保証できる。
+  const obj = u as Record<string, unknown>;
+
+  // commandのリストと重複を排除したobjのkeyの数が等しくない
+  const uniqueKeys = Array.from(new Set(Object.keys(obj)));
+  if (uniqueKeys.length !== commandList.length) {
     return false;
   }
 
-  // 同一スコープじゃなくても配列として扱うため
-  const array: unknown[] = u;
-
-  // null | undefinedなどが含まれていればCommandObjsではない
-  if (!array.every((a) => a)) {
+  // コマンドが全て含まれていない。
+  if (!commandList.every((command) => uniqueKeys.includes(command))) {
     return false;
   }
 
-  // null | undefinedが含まれていないので、要素のなんのプロパティにアクセスしてもエラーは起きない。d
-  const notNullArray = array as Record<string, unknown>[];
-  const notNullCommands = notNullArray.map((e) => e.command);
-  if (Array.from(new Set(notNullCommands)).length !== commandList.length) {
-    return false;
-  }
-
-  const noDuplicationCommands = notNullCommands;
-  // どちらのリストも要素数が同じで重複がないので、これですべてのコマンドが揃っていることを保証する。
-  // commandListは重複を許してしまうが・・・
+  // コマンドをkeyとしたときにオブジェクトにnull値が存在する
+  const commandObj = obj as Record<Command, unknown>;
   if (
-    !commandList.every((c) => {
-      return noDuplicationCommands.includes(c);
+    commandList.some((command) => {
+      return commandObj[command] == null;
     })
   ) {
     return false;
   }
 
-  // 最後にcommand以外のプロパティの型を確認する
-  return notNullArray.every(
-    (e) => typeof e.text === "string" && typeof e.description === "string"
+  const nonNullCommandObj = commandObj as Record<
+    Command,
+    Record<string, unknown>
+  >;
+
+  return commandList.every(
+    (command) =>
+      typeof nonNullCommandObj[command].text === "string" &&
+      typeof nonNullCommandObj[command].description === "string"
   );
 }
 
-export const useCommandObjs = (): [
-  CommandObjs,
-  (commandObjs: CommandObjs) => void
+export const useAllCommandObjs = (): [
+  AllCommandObjs,
+  (commandObjs: AllCommandObjs) => void
 ] => {
-  const key = "commandObjs";
-  const [commandObjs, internalSetCommandObjs] = useState<CommandObjs>([
-    {
-      command: "giveUpAll",
+  const key = "allCommandObjs";
+  const [allCommandObjs, internalSetAllCommandObjs] = useState<AllCommandObjs>({
+    giveUpAll: {
       text: "すべてを諦める",
       description: "すべてのTodoアイテムを削除します。",
     },
-    {
-      command: "changeFontSize",
+    changeFontSize: {
       text: "文字のサイズを変える",
       description: "Taskの文字の大きさを変更します。",
     },
-    {
-      command: "changeCommandObjs",
+    changeCommandObjs: {
       text: "コマンドを変える",
       description: "コマンドのテキストを変更します",
     },
-  ]);
+  });
 
-  const setCommandObjs = useCallback((commandObjs: CommandObjs) => {
-    internalSetCommandObjs(commandObjs);
+  const setCommandObjs = useCallback((commandObjs: AllCommandObjs) => {
+    internalSetAllCommandObjs(commandObjs);
     localStorage.setItem(key, JSON.stringify(commandObjs));
   }, []);
 
   // localStorageから初期値を読み出す
   useEffect(() => {
     const commandObjs = localStorage.getItem(key);
-    if (!commandObjs || !isCommandObjs(commandObjs)) {
+    if (!commandObjs || !isAllCommandObjs(commandObjs)) {
       return;
     }
 
@@ -113,5 +103,5 @@ export const useCommandObjs = (): [
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return [commandObjs, setCommandObjs];
+  return [allCommandObjs, setCommandObjs];
 };

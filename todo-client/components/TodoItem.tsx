@@ -1,7 +1,7 @@
 import { chakra } from "@chakra-ui/react";
 import React from "react";
 import { Todo } from "../api/task";
-import { CommandObjs } from "../hooks/useCommandObjs";
+import { AllCommandObjs } from "../hooks/useCommandObjs";
 import { TaskFontSize } from "../hooks/useTaskFontSize";
 import {
   ChangeCommandTextsTodoItem,
@@ -17,7 +17,7 @@ import { GiveUpAllTodoItem, GiveUpAllTodoItemProps } from "./GiveUpAllTodoItem";
 type Props = {
   todo: Todo;
   todoFontSize: TaskFontSize;
-  commandObjs: CommandObjs;
+  commandObjs: AllCommandObjs;
 } & Omit<
   GiveUpAllTodoItemProps &
     // taskFontSizeを使う
@@ -46,9 +46,7 @@ const Component: React.VFC<Props> = ({
   } = others;
 
   switch (todo.title) {
-    case `\`${
-      commandObjs.find((obj) => obj.command === "giveUpAll")?.text
-    }\``: {
+    case `\`${commandObjs.giveUpAll.text}\``: {
       return (
         <GiveUpAllTodoItem
           className={className}
@@ -63,9 +61,7 @@ const Component: React.VFC<Props> = ({
         />
       );
     }
-    case `\`${
-      commandObjs.find((obj) => obj.command === "changeFontSize")?.text
-    }\``: {
+    case `\`${commandObjs.changeFontSize.text}\``: {
       return (
         <ChangeFontSizeTodoItem
           className={className}
@@ -79,9 +75,7 @@ const Component: React.VFC<Props> = ({
         />
       );
     }
-    case `\`${
-      commandObjs.find((obj) => obj.command === "changeCommandObjs")?.text
-    }\``: {
+    case `\`${commandObjs.changeCommandObjs.text}\``: {
       return (
         <ChangeCommandTextsTodoItem
           className={className}
