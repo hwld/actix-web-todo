@@ -1,9 +1,12 @@
 import { chakra } from "@chakra-ui/react";
-import React from "react";
+import React, { useState } from "react";
 import { UseTasksResult } from "../hooks/useTasks";
 import { TaskItemBase, TaskItemBaseProps } from "./TaskItemBase";
 
-export type CommonTaskItemProps = Omit<TaskItemBaseProps, "onChangeChecked"> & {
+export type CommonTaskItemProps = Omit<
+  TaskItemBaseProps,
+  "onChangeChecked" | "checked"
+> & {
   onUpdateTodo: UseTasksResult["updateTask"];
 };
 
@@ -14,10 +17,16 @@ const Component: React.VFC<CommonTaskItemProps> = ({
   onUpdateTodo,
   ...props
 }) => {
+  const [isChecked, setIsChecked] = useState(task.isDone);
+
   const handleChangeChecked: TaskItemBaseProps["onChangeChecked"] = async (
     isDone
   ) => {
-    return onUpdateTodo({ id: task.id, isDone });
+    setIsChecked(!isChecked);
+    const result = await onUpdateTodo({ id: task.id, isDone });
+    if (result === "Error") {
+      setIsChecked(isChecked);
+    }
   };
 
   return (
@@ -25,6 +34,7 @@ const Component: React.VFC<CommonTaskItemProps> = ({
       className={className}
       task={task}
       onDeleteTask={onDeleteTask}
+      checked={isChecked}
       onChangeChecked={handleChangeChecked}
       {...props}
     />

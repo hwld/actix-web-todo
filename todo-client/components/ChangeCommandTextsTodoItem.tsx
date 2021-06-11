@@ -1,14 +1,18 @@
 import { useDisclosure } from "@chakra-ui/hooks";
 import { chakra } from "@chakra-ui/react";
-import React from "react";
+import React, { useState } from "react";
+import { UseTasksResult } from "../hooks/useTasks";
 import {
   ChangeCommandTextsDialog,
   ChangeCommandTextsDialogProps,
 } from "./ChangeCommandTextsDialog";
-import { CommonTaskItemProps } from "./CommonTaskItem";
 import { TaskItemBase, TaskItemBaseProps } from "./TaskItemBase";
 
-export type ChangeCommandTextsTodoItemProps = CommonTaskItemProps & {
+export type ChangeCommandTextsTodoItemProps = Omit<
+  TaskItemBaseProps,
+  "onChangeChecked" | "checked"
+> & {
+  onUpdateTodo: UseTasksResult["updateTask"];
   defaultCommandTexts: ChangeCommandTextsDialogProps["defaultCommandTexts"];
   onChangeCommandTexts: ChangeCommandTextsDialogProps["onChangeCommandTexts"];
 };
@@ -22,6 +26,7 @@ const Component: React.VFC<ChangeCommandTextsTodoItemProps> = ({
   onChangeCommandTexts,
   ...props
 }) => {
+  const [isChecked, setIsChecked] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleChangeChecked: TaskItemBaseProps["onChangeChecked"] = async (
@@ -30,15 +35,19 @@ const Component: React.VFC<ChangeCommandTextsTodoItemProps> = ({
     if (isDone) {
       onOpen();
     }
-    return "NoError";
   };
 
   const handleChangeCommandTexts: ChangeCommandTextsDialogProps["onChangeCommandTexts"] = async (
     texts
   ) => {
+    setIsChecked(true);
     onChangeCommandTexts(texts);
 
-    await onUpdateTodo({ id: task.id, isDone: true });
+    const result = await onUpdateTodo({ id: task.id, isDone: true });
+    if (result === "Error") {
+      setIsChecked(false);
+    }
+
     onDeleteTask({ id: task.id });
   };
 
@@ -48,6 +57,7 @@ const Component: React.VFC<ChangeCommandTextsTodoItemProps> = ({
         className={className}
         task={task}
         onDeleteTask={onDeleteTask}
+        checked={isChecked}
         onChangeChecked={handleChangeChecked}
         {...props}
       />

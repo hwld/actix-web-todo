@@ -1,7 +1,7 @@
 import { chakra, CloseButton, Flex, Text } from "@chakra-ui/react";
-import React, { SyntheticEvent, useMemo, useState } from "react";
+import React, { SyntheticEvent, useMemo } from "react";
 import { Task } from "../api/task";
-import { ErrorType, UseTasksResult } from "../hooks/useTasks";
+import { UseTasksResult } from "../hooks/useTasks";
 import { MotionPropsWithChakra } from "../types/ChakraMotionProps";
 import { MotionBox } from "./MotionBox";
 import { TaskCheckBox } from "./TaskCheckBox";
@@ -10,19 +10,19 @@ export type TaskItemBaseProps = {
   className?: string;
   task: Task;
   onDeleteTask: UseTasksResult["deleteTask"];
-  onChangeChecked: (isDone: boolean) => Promise<ErrorType>;
+  checked: boolean;
+  onChangeChecked: (checked: boolean) => void;
 } & MotionPropsWithChakra;
 
 const Component: React.VFC<TaskItemBaseProps> = ({
   className,
   task,
   onDeleteTask,
+  checked,
   onChangeChecked,
   motionTransition,
   ...motionProps
 }) => {
-  const [isChecked, setIsChecked] = useState(task.isDone);
-
   const title = useMemo(() => {
     if (task.isDone) {
       return <del>{task.title}</del>;
@@ -33,13 +33,8 @@ const Component: React.VFC<TaskItemBaseProps> = ({
   const handleChangeChecked = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setIsChecked(e.target.checked);
-
-    const errorType = await onChangeChecked(e.target.checked);
-
-    if (errorType === "Error") {
-      setIsChecked(!e.target.checked);
-    }
+    console.log("?");
+    onChangeChecked(e.target.checked);
   };
 
   const handleClickCloseButton = (e: SyntheticEvent) => {
@@ -62,7 +57,7 @@ const Component: React.VFC<TaskItemBaseProps> = ({
           height="70px"
           borderRadius="50%"
           iconWidth="30px"
-          isChecked={isChecked}
+          isChecked={checked}
           onChange={handleChangeChecked}
         />
         <Text fontWeight="bold" px={5} w="full" wordBreak="break-all">

@@ -1,6 +1,6 @@
 import { useDisclosure } from "@chakra-ui/hooks";
 import { chakra } from "@chakra-ui/react";
-import React from "react";
+import React, { useState } from "react";
 import { TaskFontSize } from "../hooks/useTaskFontSize";
 import { UseTasksResult } from "../hooks/useTasks";
 import {
@@ -12,7 +12,7 @@ import { TaskItemBase, TaskItemBaseProps } from "./TaskItemBase";
 // TaskItemBasePropsのonChangeCheckedはコンポーネントの内側で作成する。
 export type ChangeFontSizeTodoItemProps = Omit<
   TaskItemBaseProps,
-  "onChangeChecked"
+  "onChangeChecked" | "checked"
 > & {
   defaultFontSize: ChangeFontSizeDialogProps["defaultFontSize"];
   onChangeFontSize: ChangeFontSizeDialogProps["onChangeFontSize"];
@@ -28,6 +28,7 @@ const Component: React.VFC<ChangeFontSizeTodoItemProps> = ({
   onChangeFontSize,
   ...props
 }) => {
+  const [isChecked, setIsChecked] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleChangeChecked: TaskItemBaseProps["onChangeChecked"] = async (
@@ -36,13 +37,16 @@ const Component: React.VFC<ChangeFontSizeTodoItemProps> = ({
     if (isDone) {
       onOpen();
     }
-    return "NoError";
   };
 
   const handleChangeFontSize = async (fontSize: TaskFontSize) => {
+    setIsChecked(true);
     onChangeFontSize(fontSize);
 
-    await onUpdateTodo({ id: task.id, isDone: true });
+    const result = await onUpdateTodo({ id: task.id, isDone: true });
+    if (result === "Error") {
+      setIsChecked(false);
+    }
     onDeleteTask({ id: task.id });
   };
 
@@ -52,6 +56,7 @@ const Component: React.VFC<ChangeFontSizeTodoItemProps> = ({
         className={className}
         task={task}
         onDeleteTask={onDeleteTask}
+        checked={isChecked}
         onChangeChecked={handleChangeChecked}
         {...props}
       />
