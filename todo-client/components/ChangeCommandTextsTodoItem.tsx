@@ -1,6 +1,6 @@
 import { useDisclosure } from "@chakra-ui/hooks";
 import { chakra } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { forwardRef, useState } from "react";
 import { UseTasksResult } from "../hooks/useTasks";
 import {
   ChangeCommandTextsDialog,
@@ -17,58 +17,62 @@ export type ChangeCommandTextsTodoItemProps = Omit<
   onChangeCommandTexts: ChangeCommandTextsDialogProps["onChangeCommandTexts"];
 };
 
-const Component: React.VFC<ChangeCommandTextsTodoItemProps> = ({
-  className,
-  task,
-  onDeleteTask,
-  onUpdateTodo,
-  defaultCommandTexts,
-  onChangeCommandTexts,
-  ...props
-}) => {
-  const [isChecked, setIsChecked] = useState(false);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const handleChangeChecked: TaskItemBaseProps["onChangeChecked"] = async (
-    isDone
+const Component = forwardRef<HTMLDivElement, ChangeCommandTextsTodoItemProps>(
+  (
+    {
+      className,
+      task,
+      onDeleteTask,
+      onUpdateTodo,
+      defaultCommandTexts,
+      onChangeCommandTexts,
+    },
+    ref
   ) => {
-    if (isDone) {
-      onOpen();
-    }
-  };
+    const [isChecked, setIsChecked] = useState(false);
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleChangeCommandTexts: ChangeCommandTextsDialogProps["onChangeCommandTexts"] = async (
-    texts
-  ) => {
-    setIsChecked(true);
-    onChangeCommandTexts(texts);
+    const handleChangeChecked: TaskItemBaseProps["onChangeChecked"] = async (
+      isDone
+    ) => {
+      if (isDone) {
+        onOpen();
+      }
+    };
 
-    const result = await onUpdateTodo({ id: task.id, isDone: true });
-    if (result === "Error") {
-      setIsChecked(false);
-    }
+    const handleChangeCommandTexts: ChangeCommandTextsDialogProps["onChangeCommandTexts"] = async (
+      texts
+    ) => {
+      setIsChecked(true);
+      onChangeCommandTexts(texts);
 
-    onDeleteTask({ id: task.id });
-  };
+      const result = await onUpdateTodo({ id: task.id, isDone: true });
+      if (result === "Error") {
+        setIsChecked(false);
+      }
 
-  return (
-    <>
-      <TaskItemBase
-        className={className}
-        task={task}
-        onDeleteTask={onDeleteTask}
-        checked={isChecked}
-        onChangeChecked={handleChangeChecked}
-        {...props}
-      />
-      <ChangeCommandTextsDialog
-        isOpen={isOpen}
-        onClose={onClose}
-        defaultCommandTexts={defaultCommandTexts}
-        onChangeCommandTexts={handleChangeCommandTexts}
-      />
-    </>
-  );
-};
+      onDeleteTask({ id: task.id });
+    };
+
+    return (
+      <>
+        <TaskItemBase
+          ref={ref}
+          className={className}
+          task={task}
+          onDeleteTask={onDeleteTask}
+          checked={isChecked}
+          onChangeChecked={handleChangeChecked}
+        />
+        <ChangeCommandTextsDialog
+          isOpen={isOpen}
+          onClose={onClose}
+          defaultCommandTexts={defaultCommandTexts}
+          onChangeCommandTexts={handleChangeCommandTexts}
+        />
+      </>
+    );
+  }
+);
 
 export const ChangeCommandTextsTodoItem = chakra(Component);

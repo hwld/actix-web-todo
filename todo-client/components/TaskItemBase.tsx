@@ -1,9 +1,7 @@
-import { chakra, CloseButton, Flex, Text } from "@chakra-ui/react";
-import React, { SyntheticEvent, useMemo } from "react";
+import { Box, chakra, CloseButton, Flex, Text } from "@chakra-ui/react";
+import React, { forwardRef, SyntheticEvent, useMemo } from "react";
 import { Task } from "../api/task";
 import { UseTasksResult } from "../hooks/useTasks";
-import { MotionPropsWithChakra } from "../types/ChakraMotionProps";
-import { MotionBox } from "./MotionBox";
 import { TaskCheckBox } from "./TaskCheckBox";
 
 export type TaskItemBaseProps = {
@@ -12,46 +10,41 @@ export type TaskItemBaseProps = {
   onDeleteTask: UseTasksResult["deleteTask"];
   checked: boolean;
   onChangeChecked: (checked: boolean) => void;
-} & MotionPropsWithChakra;
+};
 
-const Component: React.VFC<TaskItemBaseProps> = ({
-  className,
-  task,
-  onDeleteTask,
-  checked,
-  onChangeChecked,
-  motionTransition,
-  ...motionProps
-}) => {
-  const title = useMemo(() => {
-    if (task.isDone) {
-      return <del>{task.title}</del>;
-    }
-    return task.title;
-  }, [task.isDone, task.title]);
+const Component = forwardRef<HTMLDivElement, TaskItemBaseProps>(
+  ({ className, task, onDeleteTask, checked, onChangeChecked }, ref) => {
+    const title = useMemo(() => {
+      if (task.isDone) {
+        return <del>{task.title}</del>;
+      }
+      return task.title;
+    }, [task.isDone, task.title]);
 
-  const handleChangeChecked = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    console.log("?");
-    onChangeChecked(e.target.checked);
-  };
+    const handleChangeChecked = async (
+      e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+      onChangeChecked(e.target.checked);
+    };
 
-  const handleClickCloseButton = (e: SyntheticEvent) => {
-    e.stopPropagation();
-    onDeleteTask({ id: task.id });
-  };
+    const handleClickCloseButton = (e: SyntheticEvent) => {
+      e.stopPropagation();
+      onDeleteTask({ id: task.id });
+    };
 
-  return (
-    <MotionBox {...motionProps} transition={motionTransition} w="100%" h="100%">
+    return (
       <Flex
+        ref={ref}
         className={className}
         p={5}
         justify="space-between"
         align="center"
         bg="gray.600"
         borderRadius="10px"
+        w="100%"
+        h="100%"
       >
+        <Box ref={ref} />
         <TaskCheckBox
           width="70px"
           height="70px"
@@ -69,8 +62,8 @@ const Component: React.VFC<TaskItemBaseProps> = ({
           alignSelf="flex-start"
         />
       </Flex>
-    </MotionBox>
-  );
-};
+    );
+  }
+);
 
 export const TaskItemBase = chakra(Component);
