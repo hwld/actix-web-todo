@@ -1,8 +1,8 @@
-import { chakra } from "@chakra-ui/react";
-import { motion } from "framer-motion";
+import { chakra, ChakraProps } from "@chakra-ui/react";
+import { motion, MotionProps } from "framer-motion";
 import React, { forwardRef } from "react";
 import { Todo } from "../api/task";
-import { AllCommandObjs } from "../hooks/useCommandObjs";
+import { Command, CommandInfo } from "../hooks/useCommandsInfo";
 import { TaskFontSize } from "../hooks/useTaskFontSize";
 import {
   ChangeCommandTextsTodoItem,
@@ -18,17 +18,21 @@ import { GiveUpAllTodoItem, GiveUpAllTodoItemProps } from "./GiveUpAllTodoItem";
 type Props = {
   todo: Todo;
   todoFontSize: TaskFontSize;
-  commandObjs: AllCommandObjs;
+  commandInfos: CommandInfo[];
+  getCommandText: (command: Command) => string;
 } & Omit<
   GiveUpAllTodoItemProps &
     ChangeFontSizeTodoItemProps &
     ChangeCommandTextsTodoItemProps &
     CommonTaskItemProps,
-  "task" | "onChangeChecked" | "defaultFontSize" | "defaultCommandTexts"
+  "task" | "onChangeChecked" | "defaultFontSize" | "defaultCommandInfos"
 >;
 
 const Component = forwardRef<HTMLDivElement, Props>(
-  ({ className, todoFontSize, commandObjs, ...others }, ref) => {
+  (
+    { className, todoFontSize, commandInfos, getCommandText, ...others },
+    ref
+  ) => {
     const {
       todo,
       allTodos,
@@ -40,7 +44,7 @@ const Component = forwardRef<HTMLDivElement, Props>(
     } = others;
 
     switch (todo.title) {
-      case `\`${commandObjs.giveUpAll.text}\``: {
+      case `\`${getCommandText("giveUpAll")}\``: {
         return (
           <GiveUpAllTodoItem
             ref={ref}
@@ -55,7 +59,7 @@ const Component = forwardRef<HTMLDivElement, Props>(
           />
         );
       }
-      case `\`${commandObjs.changeFontSize.text}\``: {
+      case `\`${getCommandText("changeFontSize")}\``: {
         return (
           <ChangeFontSizeTodoItem
             ref={ref}
@@ -69,7 +73,7 @@ const Component = forwardRef<HTMLDivElement, Props>(
           />
         );
       }
-      case `\`${commandObjs.changeCommandObjs.text}\``: {
+      case `\`${getCommandText("changeCommandText")}\``: {
         return (
           <ChangeCommandTextsTodoItem
             ref={ref}
@@ -77,7 +81,7 @@ const Component = forwardRef<HTMLDivElement, Props>(
             task={todo}
             onDeleteTask={onDeleteTask}
             onUpdateTodo={onUpdateTodo}
-            defaultCommandTexts={commandObjs}
+            defaultCommandInfos={commandInfos}
             onChangeCommandTexts={onChangeCommandTexts}
             fontSize={`${todoFontSize}`}
           />
@@ -99,4 +103,16 @@ const Component = forwardRef<HTMLDivElement, Props>(
   }
 );
 
-export const TodoItem = chakra(motion(Component));
+const ComponentWithChakra = chakra(motion(Component));
+
+// motionとchakraに共通のtransition propsが存在する。
+// motion factoryでラップして、transition以外のpropsをchakraコンポーネントに渡すことで
+// chakraのtransitionは使えなくなるが、motionのtransitionを使えるようにする。
+type TodoItemProps = Omit<Props & ChakraProps, keyof MotionProps> & MotionProps;
+export const TodoItem = motion(
+  forwardRef<HTMLDivElement, TodoItemProps>((props, ref) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { transition, ...rest } = props;
+    return <ComponentWithChakra ref={ref} {...rest} />;
+  })
+);

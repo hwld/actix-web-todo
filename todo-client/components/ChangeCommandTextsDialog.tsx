@@ -14,52 +14,45 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/modal";
-import React, { useMemo, useState } from "react";
-import { Command, AllCommandObjs, isCommand } from "../hooks/useCommandObjs";
+import React, { useState } from "react";
+import { Command, CommandInfo } from "../hooks/useCommandsInfo";
 
 export type ChangeCommandTextsDialogProps = {
   isOpen: boolean;
   onClose: () => void;
-  defaultCommandTexts: AllCommandObjs;
-  onChangeCommandTexts: (texts: AllCommandObjs) => void;
+  defaultCommandInfos: CommandInfo[];
+  onChangeCommandTexts: (
+    commandTexts: Pick<CommandInfo, "command" | "text">[]
+  ) => void;
 };
 
 const Component: React.FC<ChangeCommandTextsDialogProps> = ({
   isOpen,
   onClose,
-  defaultCommandTexts,
+  defaultCommandInfos,
   onChangeCommandTexts,
 }) => {
-  const [commandObjs, setCommandObjs] = useState(defaultCommandTexts);
+  const [commandInfos, setCommandInfos] = useState(defaultCommandInfos);
 
-  const commandObjList = useMemo(() => {
-    const list: { command: Command; text: string; description: string }[] = [];
-    Object.keys(commandObjs).forEach((command) => {
-      if (isCommand(command)) {
-        list.push({
-          command,
-          text: commandObjs[command].text,
-          description: commandObjs[command].description,
-        });
-      }
+  const changeCommandText = (command: Command, text: string) => {
+    setCommandInfos((infos) => {
+      return infos.map((info) => {
+        if (info.command === command) {
+          return { ...info, text };
+        }
+        return info;
+      });
     });
-    return list;
-  }, [commandObjs]);
-
-  const changeCommandObj = (command: Command, text: string) => {
-    setCommandObjs((objs) => ({
-      ...objs,
-      [command]: { text, description: commandObjs[command].description },
-    }));
   };
 
-  const handleChangeCommandTexts = () => {
-    onChangeCommandTexts(commandObjs);
+  const handleChangeCommandText = () => {
+    onChangeCommandTexts(commandInfos);
     onClose();
   };
 
   const cancel = () => {
-    setCommandObjs(commandObjs);
+    // 内部のcommandTextをリセットする
+    setCommandInfos(defaultCommandInfos);
     onClose();
   };
 
@@ -70,17 +63,17 @@ const Component: React.FC<ChangeCommandTextsDialogProps> = ({
         <ModalHeader>コマンドを変更</ModalHeader>
         <ModalBody>
           <Stack spacing={5}>
-            {commandObjList.map((obj) => {
+            {commandInfos.map((info) => {
               return (
-                <FormControl key={obj.command}>
-                  <FormLabel>{obj.command}</FormLabel>
+                <FormControl key={info.command}>
+                  <FormLabel>{info.command}</FormLabel>
                   <Input
-                    value={obj.text}
+                    value={info.text}
                     onChange={({ target: { value } }) => {
-                      changeCommandObj(obj.command, value);
+                      changeCommandText(info.command, value);
                     }}
                   />
-                  <FormHelperText>{obj.description}</FormHelperText>
+                  <FormHelperText>{info.description}</FormHelperText>
                 </FormControl>
               );
             })}
@@ -90,7 +83,7 @@ const Component: React.FC<ChangeCommandTextsDialogProps> = ({
           <Button colorScheme="red" mr={5} onClick={cancel}>
             中止
           </Button>
-          <Button onClick={handleChangeCommandTexts}>変更</Button>
+          <Button onClick={handleChangeCommandText}>変更</Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

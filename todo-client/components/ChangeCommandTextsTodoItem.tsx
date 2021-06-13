@@ -13,7 +13,7 @@ export type ChangeCommandTextsTodoItemProps = Omit<
   "onChangeChecked" | "checked"
 > & {
   onUpdateTodo: UseTasksResult["updateTask"];
-  defaultCommandTexts: ChangeCommandTextsDialogProps["defaultCommandTexts"];
+  defaultCommandInfos: ChangeCommandTextsDialogProps["defaultCommandInfos"];
   onChangeCommandTexts: ChangeCommandTextsDialogProps["onChangeCommandTexts"];
 };
 
@@ -24,7 +24,7 @@ const Component = forwardRef<HTMLDivElement, ChangeCommandTextsTodoItemProps>(
       task,
       onDeleteTask,
       onUpdateTodo,
-      defaultCommandTexts,
+      defaultCommandInfos,
       onChangeCommandTexts,
     },
     ref
@@ -41,10 +41,10 @@ const Component = forwardRef<HTMLDivElement, ChangeCommandTextsTodoItemProps>(
     };
 
     const handleChangeCommandTexts: ChangeCommandTextsDialogProps["onChangeCommandTexts"] = async (
-      texts
+      commandTexts
     ) => {
       setIsChecked(true);
-      onChangeCommandTexts(texts);
+      onChangeCommandTexts(commandTexts);
 
       const result = await onUpdateTodo({ id: task.id, isDone: true });
       if (result === "Error") {
@@ -67,7 +67,7 @@ const Component = forwardRef<HTMLDivElement, ChangeCommandTextsTodoItemProps>(
         <ChangeCommandTextsDialog
           isOpen={isOpen}
           onClose={onClose}
-          defaultCommandTexts={defaultCommandTexts}
+          defaultCommandInfos={defaultCommandInfos}
           onChangeCommandTexts={handleChangeCommandTexts}
         />
       </>
