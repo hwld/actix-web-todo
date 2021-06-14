@@ -56,6 +56,7 @@ const Component = forwardRef<HTMLDivElement, Props>(
             onUpdateTodo={onUpdateTodo}
             // 直接渡せない
             fontSize={`${todoFontSize}`}
+            bgColor="blue.600"
           />
         );
       }
@@ -70,6 +71,7 @@ const Component = forwardRef<HTMLDivElement, Props>(
             onUpdateTodo={onUpdateTodo}
             onChangeFontSize={onChangeFontSize}
             fontSize={`${todoFontSize}`}
+            bgColor="blue.600"
           />
         );
       }
@@ -84,6 +86,7 @@ const Component = forwardRef<HTMLDivElement, Props>(
             defaultCommandInfos={commandInfos}
             onChangeCommandTexts={onChangeCommandTexts}
             fontSize={`${todoFontSize}`}
+            bgColor="blue.600"
           />
         );
       }

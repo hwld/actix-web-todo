@@ -26,16 +26,18 @@ export type ChangeCommandTextsDialogProps = {
   ) => void;
 };
 
-const Component: React.FC<ChangeCommandTextsDialogProps> = ({
+const Component: React.VFC<ChangeCommandTextsDialogProps> = ({
   isOpen,
   onClose,
   defaultCommandInfos,
   onChangeCommandTexts,
 }) => {
-  const [commandInfos, setCommandInfos] = useState(defaultCommandInfos);
+  const [internalCommandInfos, setInternalCommandInfos] = useState(
+    defaultCommandInfos
+  );
 
   const changeCommandText = (command: Command, text: string) => {
-    setCommandInfos((infos) => {
+    setInternalCommandInfos((infos) => {
       return infos.map((info) => {
         if (info.command === command) {
           return { ...info, text };
@@ -46,13 +48,15 @@ const Component: React.FC<ChangeCommandTextsDialogProps> = ({
   };
 
   const handleChangeCommandText = () => {
-    onChangeCommandTexts(commandInfos);
+    onChangeCommandTexts(
+      internalCommandInfos.map(({ command, text }) => ({ command, text }))
+    );
     onClose();
   };
 
   const cancel = () => {
     // 内部のcommandTextをリセットする
-    setCommandInfos(defaultCommandInfos);
+    setInternalCommandInfos(defaultCommandInfos);
     onClose();
   };
 
@@ -63,7 +67,7 @@ const Component: React.FC<ChangeCommandTextsDialogProps> = ({
         <ModalHeader>コマンドを変更</ModalHeader>
         <ModalBody>
           <Stack spacing={5}>
-            {commandInfos.map((info) => {
+            {internalCommandInfos.map((info) => {
               return (
                 <FormControl key={info.command}>
                   <FormLabel>{info.command}</FormLabel>
