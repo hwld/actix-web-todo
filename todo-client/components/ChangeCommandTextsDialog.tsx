@@ -1,11 +1,14 @@
 import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
   FormControl,
   FormHelperText,
   FormLabel,
   Stack,
+  Text,
 } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/button";
-import { Input } from "@chakra-ui/input";
 import {
   Modal,
   ModalBody,
@@ -16,6 +19,7 @@ import {
 } from "@chakra-ui/modal";
 import React, { useState } from "react";
 import { Command, CommandInfo } from "../hooks/useCommandsInfo";
+import { ChangeCommandTextField } from "./ChangeCommandTextField";
 
 export type ChangeCommandTextsDialogProps = {
   isOpen: boolean;
@@ -36,6 +40,8 @@ const Component: React.VFC<ChangeCommandTextsDialogProps> = ({
     defaultCommandInfos
   );
 
+  const [errorField, setErrorField] = useState<Command | null>(null);
+
   const changeCommandText = (command: Command, text: string) => {
     setInternalCommandInfos((infos) => {
       return infos.map((info) => {
@@ -48,43 +54,56 @@ const Component: React.VFC<ChangeCommandTextsDialogProps> = ({
   };
 
   const handleChangeCommandText = () => {
-    onChangeCommandTexts(
-      internalCommandInfos.map(({ command, text }) => ({ command, text }))
-    );
-    onClose();
+    const areAllUnique = internalCommandInfos.every((info, index, self) => {
+      const isUnique =
+        self.map(({ text }) => text).indexOf(info.text) === index;
+      if (!isUnique) {
+        setErrorField(info.command);
+      }
+      return isUnique;
+    });
+
+    if (areAllUnique) {
+      onChangeCommandTexts(
+        internalCommandInfos.map(({ command, text }) => ({ command, text }))
+      );
+      handleClose();
+    }
   };
 
-  const cancel = () => {
+  const handleClose = () => {
     // 内部のcommandTextをリセットする
     setInternalCommandInfos(defaultCommandInfos);
     onClose();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered>
+    <Modal isOpen={isOpen} onClose={handleClose} isCentered>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>コマンドを変更</ModalHeader>
         <ModalBody>
-          <Stack spacing={5}>
+          <Stack spacing={5} mb={5}>
             {internalCommandInfos.map((info) => {
               return (
-                <FormControl key={info.command}>
-                  <FormLabel>{info.command}</FormLabel>
-                  <Input
-                    value={info.text}
-                    onChange={({ target: { value } }) => {
-                      changeCommandText(info.command, value);
-                    }}
-                  />
-                  <FormHelperText>{info.description}</FormHelperText>
-                </FormControl>
+                <ChangeCommandTextField
+                  key={info.command}
+                  info={info}
+                  changeCommandText={changeCommandText}
+                  isInvalid={errorField === info.command}
+                />
               );
             })}
           </Stack>
+          {errorField && (
+            <Alert status="error">
+              <AlertIcon />
+              <AlertTitle>重複しています</AlertTitle>
+            </Alert>
+          )}
         </ModalBody>
         <ModalFooter>
-          <Button colorScheme="red" mr={5} onClick={cancel}>
+          <Button colorScheme="red" mr={5} onClick={handleClose}>
             中止
           </Button>
           <Button onClick={handleChangeCommandText}>変更</Button>
