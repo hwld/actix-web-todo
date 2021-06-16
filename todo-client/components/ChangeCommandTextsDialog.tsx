@@ -1,13 +1,4 @@
-import {
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Alert, AlertIcon, AlertTitle, Stack } from "@chakra-ui/react";
 import { Button } from "@chakra-ui/button";
 import {
   Modal,
@@ -40,7 +31,12 @@ const Component: React.VFC<ChangeCommandTextsDialogProps> = ({
     defaultCommandInfos
   );
 
-  const [errorField, setErrorField] = useState<Command | null>(null);
+  const [errors, setErrors] = useState<
+    (
+      | { type: "duplication"; fields: Command[] }
+      | { type: "blank"; fields: Command[] }
+    )[]
+  >([]);
 
   const changeCommandText = (command: Command, text: string) => {
     setInternalCommandInfos((infos) => {
@@ -54,21 +50,52 @@ const Component: React.VFC<ChangeCommandTextsDialogProps> = ({
   };
 
   const handleChangeCommandText = () => {
-    const areAllUnique = internalCommandInfos.every((info, index, self) => {
-      const isUnique =
-        self.map(({ text }) => text).indexOf(info.text) === index;
-      if (!isUnique) {
-        setErrorField(info.command);
-      }
-      return isUnique;
-    });
+    const internalTexts = internalCommandInfos.map(({ text }) => text);
 
-    if (areAllUnique) {
-      onChangeCommandTexts(
-        internalCommandInfos.map(({ command, text }) => ({ command, text }))
-      );
-      handleClose();
+    // 空欄がないか
+    if (!internalTexts.every((t) => t.length !== 0)) {
+      const fields = internalCommandInfos
+        .filter(({ text }) => text.length === 0)
+        .map(({ command }) => command);
+
+      setErrors((errors) => [
+        ...errors.filter((e) => e.type !== "blank"),
+        { type: "blank", fields },
+      ]);
+      return;
     }
+    // エラーをリセット
+    setErrors((errors) => errors.filter((e) => e.type !== "blank"));
+
+    // すべてが異なるテキストか
+    const areAllUnique = internalCommandInfos.every(
+      (info, index) => internalTexts.indexOf(info.text) === index
+    );
+    if (!areAllUnique) {
+      let fields: Command[] = [];
+      internalCommandInfos.forEach((info) => {
+        // 自分を除くCommandInfoに同じテキストが存在している場合、自分をエラーが起こっているフィールドとする
+        const isErrorField = internalCommandInfos
+          .filter((i) => i.command !== info.command)
+          .some((i) => i.text === info.text);
+        if (isErrorField) {
+          fields = [...fields, info.command];
+        }
+      });
+
+      setErrors((errors) => [
+        ...errors.filter((e) => e.type !== "duplication"),
+        { type: "duplication", fields },
+      ]);
+      return;
+    }
+    // エラーをリセット
+    setErrors((errors) => errors.filter((e) => e.type !== "duplication"));
+
+    onChangeCommandTexts(
+      internalCommandInfos.map(({ command, text }) => ({ command, text }))
+    );
+    handleClose();
   };
 
   const handleClose = () => {
@@ -90,17 +117,30 @@ const Component: React.VFC<ChangeCommandTextsDialogProps> = ({
                   key={info.command}
                   info={info}
                   changeCommandText={changeCommandText}
-                  isInvalid={errorField === info.command}
+                  isInvalid={errors
+                    .flatMap((error) => error.fields)
+                    .includes(info.command)}
                 />
               );
             })}
           </Stack>
-          {errorField && (
-            <Alert status="error">
-              <AlertIcon />
-              <AlertTitle>重複しています</AlertTitle>
-            </Alert>
-          )}
+          <Stack>
+            {errors.map((error) => {
+              let errorText;
+              if (error.type === "duplication") {
+                errorText = "重複しています";
+              } else if (error.type === "blank") {
+                errorText = "空欄があります";
+              }
+
+              return (
+                <Alert status="error" key={error.type}>
+                  <AlertIcon />
+                  <AlertTitle>{errorText}</AlertTitle>
+                </Alert>
+              );
+            })}
+          </Stack>
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="red" mr={5} onClick={handleClose}>
