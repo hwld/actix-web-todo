@@ -30,13 +30,17 @@ const Component: React.FC<Props> = ({
 
   return (
     <FormControl key={info.command}>
-      <FormLabel>{info.command}</FormLabel>
+      <FormLabel color={isValid ? "gray.100" : "red.400"}>
+        {info.command}
+      </FormLabel>
       <Input
         value={info.text}
         onChange={handleChangeCommandText}
         isInvalid={!isValid}
       />
-      <FormHelperText>{info.description}</FormHelperText>
+      <FormHelperText color={isValid ? "gray.300" : "red.200"}>
+        {info.description}
+      </FormHelperText>
     </FormControl>
   );
 };
