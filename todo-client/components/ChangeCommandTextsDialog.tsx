@@ -31,12 +31,36 @@ const Component: React.VFC<ChangeCommandTextsDialogProps> = ({
     defaultCommandInfos
   );
 
-  const [errors, setErrors] = useState<
-    (
-      | { type: "duplication"; fields: Command[] }
-      | { type: "blank"; fields: Command[] }
-    )[]
-  >([]);
+  const validationRules: {
+    validator: (info: CommandInfo) => boolean;
+    errorText: string;
+  }[] = [
+    {
+      validator: ({ text }: CommandInfo) => {
+        return text !== "";
+      },
+      errorText: "空欄があります",
+    },
+    {
+      validator: (info: CommandInfo) => {
+        return (
+          internalCommandInfos
+            .filter((i) => i.command !== info.command)
+            // 空欄の重複は検証しない
+            .filter((i) => i.text !== "")
+            .every((i) => i.text !== info.text)
+        );
+      },
+      errorText: "重複があります",
+    },
+  ];
+
+  const validators = validationRules.map(({ validator }) => validator);
+
+  // 1つでも失敗している検証を返す
+  const failedValidations = validationRules.filter((rule) => {
+    return internalCommandInfos.some((info) => !rule.validator(info));
+  });
 
   const changeCommandText = (command: Command, text: string) => {
     setInternalCommandInfos((infos) => {
@@ -50,48 +74,6 @@ const Component: React.VFC<ChangeCommandTextsDialogProps> = ({
   };
 
   const handleChangeCommandText = () => {
-    const internalTexts = internalCommandInfos.map(({ text }) => text);
-
-    // 空欄がないか
-    if (!internalTexts.every((t) => t.length !== 0)) {
-      const fields = internalCommandInfos
-        .filter(({ text }) => text.length === 0)
-        .map(({ command }) => command);
-
-      setErrors((errors) => [
-        ...errors.filter((e) => e.type !== "blank"),
-        { type: "blank", fields },
-      ]);
-      return;
-    }
-    // エラーをリセット
-    setErrors((errors) => errors.filter((e) => e.type !== "blank"));
-
-    // すべてが異なるテキストか
-    const areAllUnique = internalCommandInfos.every(
-      (info, index) => internalTexts.indexOf(info.text) === index
-    );
-    if (!areAllUnique) {
-      let fields: Command[] = [];
-      internalCommandInfos.forEach((info) => {
-        // 自分を除くCommandInfoに同じテキストが存在している場合、自分をエラーが起こっているフィールドとする
-        const isErrorField = internalCommandInfos
-          .filter((i) => i.command !== info.command)
-          .some((i) => i.text === info.text);
-        if (isErrorField) {
-          fields = [...fields, info.command];
-        }
-      });
-
-      setErrors((errors) => [
-        ...errors.filter((e) => e.type !== "duplication"),
-        { type: "duplication", fields },
-      ]);
-      return;
-    }
-    // エラーをリセット
-    setErrors((errors) => errors.filter((e) => e.type !== "duplication"));
-
     onChangeCommandTexts(
       internalCommandInfos.map(({ command, text }) => ({ command, text }))
     );
@@ -117,36 +99,30 @@ const Component: React.VFC<ChangeCommandTextsDialogProps> = ({
                   key={info.command}
                   info={info}
                   changeCommandText={changeCommandText}
-                  isInvalid={errors
-                    .flatMap((error) => error.fields)
-                    .includes(info.command)}
+                  validators={validators}
                 />
               );
             })}
           </Stack>
           <Stack>
-            {errors.map((error) => {
-              let errorText;
-              if (error.type === "duplication") {
-                errorText = "重複しています";
-              } else if (error.type === "blank") {
-                errorText = "空欄があります";
-              }
-
-              return (
-                <Alert status="error" key={error.type}>
-                  <AlertIcon />
-                  <AlertTitle>{errorText}</AlertTitle>
-                </Alert>
-              );
-            })}
+            {failedValidations.map((rule, i) => (
+              <Alert status="error" key={i}>
+                <AlertIcon />
+                <AlertTitle>{rule.errorText}</AlertTitle>
+              </Alert>
+            ))}
           </Stack>
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="red" mr={5} onClick={handleClose}>
             中止
           </Button>
-          <Button onClick={handleChangeCommandText}>変更</Button>
+          <Button
+            onClick={handleChangeCommandText}
+            disabled={failedValidations.length !== 0}
+          >
+            変更
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

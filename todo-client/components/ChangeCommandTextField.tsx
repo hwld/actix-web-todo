@@ -4,21 +4,29 @@ import {
   FormLabel,
   Input,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useMemo } from "react";
 import { Command, CommandInfo } from "../hooks/useCommandsInfo";
 
 type Props = {
   info: CommandInfo;
   changeCommandText: (command: Command, text: string) => void;
-  isInvalid?: boolean;
+  validators: ((commandInfo: CommandInfo) => boolean)[];
 };
 
-const Component: React.FC<Props> = ({ info, changeCommandText, isInvalid }) => {
+const Component: React.FC<Props> = ({
+  info,
+  changeCommandText,
+  validators,
+}) => {
   const handleChangeCommandText: React.ChangeEventHandler<HTMLInputElement> = ({
     target: { value },
   }) => {
     changeCommandText(info.command, value);
   };
+
+  const isValid = useMemo(() => {
+    return validators.every((validator) => validator(info));
+  }, [info, validators]);
 
   return (
     <FormControl key={info.command}>
@@ -26,7 +34,7 @@ const Component: React.FC<Props> = ({ info, changeCommandText, isInvalid }) => {
       <Input
         value={info.text}
         onChange={handleChangeCommandText}
-        isInvalid={isInvalid}
+        isInvalid={!isValid}
       />
       <FormHelperText>{info.description}</FormHelperText>
     </FormControl>
