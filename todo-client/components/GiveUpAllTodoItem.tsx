@@ -1,25 +1,18 @@
 import { useDisclosure } from "@chakra-ui/hooks";
 import { chakra } from "@chakra-ui/react";
 import React, { forwardRef, useState } from "react";
-import { DeleteMultipleTasksRequest, Todo } from "../api/task";
+import { Task } from "../api/task";
+import { useTasksOperator, useTasksState } from "../contexts/TasksContext";
 import { GiveUpDialog } from "./GiveUpDialog";
-import { UseTasksResult } from "../hooks/useTasks";
 import { TaskItemBase, TaskItemBaseProps } from "./TaskItemBase";
 
-export type GiveUpAllTodoItemProps = Omit<
-  TaskItemBaseProps,
-  "onChangeChecked" | "checked"
-> & {
-  allTodos: Todo[];
-  onDeleteMultiple: (req: DeleteMultipleTasksRequest) => void;
-  onUpdateTodo: UseTasksResult["updateTask"];
-};
+export type GiveUpAllTodoItemProps = { className?: string; task: Task };
 
 const Component = forwardRef<HTMLDivElement, GiveUpAllTodoItemProps>(
-  (
-    { className, task, allTodos, onDeleteMultiple, onUpdateTodo, onDeleteTask },
-    ref
-  ) => {
+  ({ className, task }, ref) => {
+    const { todos: allTodos } = useTasksState();
+    const { deleteMultipleTasks, updateTask } = useTasksOperator();
+
     const [isChecked, setIsChecked] = useState(false);
     const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -34,12 +27,12 @@ const Component = forwardRef<HTMLDivElement, GiveUpAllTodoItemProps>(
     const handleGiveUpAll = async () => {
       setIsChecked(true);
 
-      const result = await onUpdateTodo({ id: task.id, isDone: true });
+      const result = await updateTask({ id: task.id, isDone: true });
       if (result === "Error") {
         setIsChecked(false);
       }
 
-      onDeleteMultiple({ ids: allTodos.map((t) => t.id) });
+      deleteMultipleTasks({ ids: allTodos.map((t) => t.id) });
     };
 
     return (
@@ -50,7 +43,6 @@ const Component = forwardRef<HTMLDivElement, GiveUpAllTodoItemProps>(
           task={task}
           checked={isChecked}
           onChangeChecked={handleChangeChecked}
-          onDeleteTask={onDeleteTask}
         />
         <GiveUpDialog
           isOpen={isOpen}

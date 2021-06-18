@@ -15,18 +15,13 @@ import {
 import styled from "@emotion/styled";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
-import { DeleteMultipleTasksRequest, Done } from "../api/task";
+import { useTasksOperator, useTasksState } from "../contexts/TasksContext";
 import { TaskFontSize } from "../hooks/useTaskFontSize";
-import { ErrorType } from "../hooks/useTasks";
 import { DoneBoxIcon } from "./DoneBoxIcon";
-import { DoneItem, DoneItemProps } from "./DoneItem";
+import { DoneItem } from "./DoneItem";
 
 type Props = {
   className?: string;
-  dones: Done[];
-  onDeleteDone: DoneItemProps["onDeleteTask"];
-  onDeleteMultipleDone: (req: DeleteMultipleTasksRequest) => Promise<ErrorType>;
-  onUpdateDone: DoneItemProps["onUpdateTodo"];
   taskFontSize: TaskFontSize;
 };
 
@@ -37,18 +32,14 @@ const IconButton = styled(ChakraIconButton)`
   }
 `;
 
-const Component: React.VFC<Props> = ({
-  className,
-  dones,
-  onDeleteDone,
-  onDeleteMultipleDone,
-  onUpdateDone,
-  taskFontSize,
-}) => {
+const Component: React.VFC<Props> = ({ className, taskFontSize }) => {
+  const { dones } = useTasksState();
+  const { deleteMultipleTasks } = useTasksOperator();
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleDeleteAllDones = async () => {
-    onDeleteMultipleDone({ ids: dones.map((d) => d.id) });
+    deleteMultipleTasks({ ids: dones.map((d) => d.id) });
   };
 
   return (
@@ -82,8 +73,6 @@ const Component: React.VFC<Props> = ({
                   <DoneItem
                     key={done.id}
                     done={done}
-                    onDeleteTask={onDeleteDone}
-                    onUpdateTodo={onUpdateDone}
                     initial={{ x: 0 }}
                     fontSize={`${taskFontSize}`}
                     layout

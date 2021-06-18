@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import { useCallback, useEffect, useState } from "react";
 import {
   CreateTaskRequest,
@@ -9,36 +8,17 @@ import {
   Todo,
   UpdateTaskRequest,
 } from "../api/task";
+import {
+  ErrorType,
+  TasksError,
+  TasksOperator,
+  TasksState,
+} from "../contexts/TasksContext";
 
-export type UseTasksError = { title: string; description: string };
-
-// task操作関数はエラー時にerrorオブジェクトを設定するが、呼び出した側でハンドリングしやすいようにErrorの有無を返す
-export type ErrorType = "Error" | "NoError";
-
-export type UseTasksResult = {
-  todos: Todo[];
-  dones: Done[];
-  error: UseTasksError | undefined;
-  addTask: (req: CreateTaskRequest) => Promise<ErrorType>;
-  deleteTask: (req: DeleteTaskRequest) => Promise<ErrorType>;
-  deleteMultipleTasks: (req: DeleteMultipleTasksRequest) => Promise<ErrorType>;
-  updateTask: (rep: UpdateTaskRequest) => Promise<ErrorType>;
-};
-
-export const getDefaultUseTasksResult = (): UseTasksResult => ({
-  todos: [],
-  dones: [],
-  error: undefined,
-  addTask: async () => "Error",
-  deleteTask: async () => "Error",
-  deleteMultipleTasks: async () => "Error",
-  updateTask: async () => "Error",
-});
-
-export const useTasks = (taskAPI: TaskAPI): UseTasksResult => {
+export const useTasks = (taskAPI: TaskAPI): [TasksState, TasksOperator] => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [dones, setDones] = useState<Done[]>([]);
-  const [error, setError] = useState<UseTasksError>();
+  const [error, setError] = useState<TasksError>();
 
   const fetchAllTasks = useCallback(async () => {
     try {
@@ -173,13 +153,8 @@ export const useTasks = (taskAPI: TaskAPI): UseTasksResult => {
     fetchAllTasks();
   }, [fetchAllTasks]);
 
-  return {
-    todos,
-    dones,
-    error,
-    addTask,
-    deleteTask,
-    deleteMultipleTasks,
-    updateTask,
-  };
+  return [
+    { todos, dones, error },
+    { addTask, deleteTask, deleteMultipleTasks, updateTask },
+  ];
 };

@@ -33,15 +33,7 @@ const Component = forwardRef<HTMLDivElement, Props>(
     { className, todoFontSize, commandInfos, getCommandText, ...others },
     ref
   ) => {
-    const {
-      todo,
-      allTodos,
-      onDeleteTask,
-      onDeleteMultiple,
-      onUpdateTodo,
-      onChangeFontSize,
-      onChangeCommandTexts,
-    } = others;
+    const { todo, onChangeFontSize, onChangeCommandTexts } = others;
 
     switch (todo.title) {
       case `\`${getCommandText("giveUpAll")}\``: {
@@ -50,10 +42,6 @@ const Component = forwardRef<HTMLDivElement, Props>(
             ref={ref}
             className={className}
             task={todo}
-            allTodos={allTodos}
-            onDeleteTask={onDeleteTask}
-            onDeleteMultiple={onDeleteMultiple}
-            onUpdateTodo={onUpdateTodo}
             // 直接渡せない
             fontSize={`${todoFontSize}`}
             bgColor="blue.600"
@@ -67,8 +55,6 @@ const Component = forwardRef<HTMLDivElement, Props>(
             className={className}
             defaultFontSize={todoFontSize}
             task={todo}
-            onDeleteTask={onDeleteTask}
-            onUpdateTodo={onUpdateTodo}
             onChangeFontSize={onChangeFontSize}
             fontSize={`${todoFontSize}`}
             bgColor="blue.600"
@@ -81,8 +67,6 @@ const Component = forwardRef<HTMLDivElement, Props>(
             ref={ref}
             className={className}
             task={todo}
-            onDeleteTask={onDeleteTask}
-            onUpdateTodo={onUpdateTodo}
             defaultCommandInfos={commandInfos}
             onChangeCommandTexts={onChangeCommandTexts}
             fontSize={`${todoFontSize}`}
@@ -96,8 +80,6 @@ const Component = forwardRef<HTMLDivElement, Props>(
             ref={ref}
             className={className}
             task={todo}
-            onDeleteTask={onDeleteTask}
-            onUpdateTodo={onUpdateTodo}
             fontSize={`${todoFontSize}`}
           />
         );

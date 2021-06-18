@@ -1,24 +1,23 @@
 import { chakra } from "@chakra-ui/react";
 import React, { forwardRef, useState } from "react";
-import { UseTasksResult } from "../hooks/useTasks";
-import { TaskItemBase, TaskItemBaseProps } from "./TaskItemBase";
+import { Task } from "../api/task";
+import { useTasksOperator } from "../contexts/TasksContext";
+import { TaskItemBase } from "./TaskItemBase";
 
-export type CommonTaskItemProps = Omit<
-  TaskItemBaseProps,
-  "onChangeChecked" | "checked"
-> & {
-  onUpdateTodo: UseTasksResult["updateTask"];
+export type CommonTaskItemProps = {
+  className?: string;
+  task: Task;
 };
 
 const Component = forwardRef<HTMLDivElement, CommonTaskItemProps>(
-  ({ className, task, onUpdateTodo, onDeleteTask }, ref) => {
+  ({ className, task }, ref) => {
+    const { updateTask } = useTasksOperator();
+
     const [isChecked, setIsChecked] = useState(task.isDone);
 
-    const handleChangeChecked: TaskItemBaseProps["onChangeChecked"] = async (
-      isDone
-    ) => {
+    const handleChangeChecked = async (isDone: boolean) => {
       setIsChecked(!isChecked);
-      const result = await onUpdateTodo({ id: task.id, isDone });
+      const result = await updateTask({ id: task.id, isDone });
       if (result === "Error") {
         setIsChecked(isChecked);
       }
@@ -31,7 +30,6 @@ const Component = forwardRef<HTMLDivElement, CommonTaskItemProps>(
         task={task}
         checked={isChecked}
         onChangeChecked={handleChangeChecked}
-        onDeleteTask={onDeleteTask}
       />
     );
   }

@@ -1,34 +1,25 @@
 import { useDisclosure } from "@chakra-ui/hooks";
 import { chakra } from "@chakra-ui/react";
 import React, { forwardRef, useState } from "react";
-import { UseTasksResult } from "../hooks/useTasks";
+import { Task } from "../api/task";
+import { useTasksOperator } from "../contexts/TasksContext";
 import {
   ChangeCommandTextsDialog,
   ChangeCommandTextsDialogProps,
 } from "./ChangeCommandTextsDialog";
 import { TaskItemBase, TaskItemBaseProps } from "./TaskItemBase";
 
-export type ChangeCommandTextsTodoItemProps = Omit<
-  TaskItemBaseProps,
-  "onChangeChecked" | "checked"
-> & {
-  onUpdateTodo: UseTasksResult["updateTask"];
+export type ChangeCommandTextsTodoItemProps = {
+  className?: string;
+  task: Task;
   defaultCommandInfos: ChangeCommandTextsDialogProps["defaultCommandInfos"];
   onChangeCommandTexts: ChangeCommandTextsDialogProps["onChangeCommandTexts"];
 };
 
 const Component = forwardRef<HTMLDivElement, ChangeCommandTextsTodoItemProps>(
-  (
-    {
-      className,
-      task,
-      onDeleteTask,
-      onUpdateTodo,
-      defaultCommandInfos,
-      onChangeCommandTexts,
-    },
-    ref
-  ) => {
+  ({ className, task, defaultCommandInfos, onChangeCommandTexts }, ref) => {
+    const { deleteTask, updateTask } = useTasksOperator();
+
     const [isChecked, setIsChecked] = useState(false);
     const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -46,12 +37,12 @@ const Component = forwardRef<HTMLDivElement, ChangeCommandTextsTodoItemProps>(
       setIsChecked(true);
       onChangeCommandTexts(commandTexts);
 
-      const result = await onUpdateTodo({ id: task.id, isDone: true });
+      const result = await updateTask({ id: task.id, isDone: true });
       if (result === "Error") {
         setIsChecked(false);
       }
 
-      onDeleteTask({ id: task.id });
+      deleteTask({ id: task.id });
     };
 
     return (
@@ -60,7 +51,6 @@ const Component = forwardRef<HTMLDivElement, ChangeCommandTextsTodoItemProps>(
           ref={ref}
           className={className}
           task={task}
-          onDeleteTask={onDeleteTask}
           checked={isChecked}
           onChangeChecked={handleChangeChecked}
         />

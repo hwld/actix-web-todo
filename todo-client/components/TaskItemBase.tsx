@@ -1,19 +1,20 @@
 import { Box, chakra, CloseButton, Flex, Text } from "@chakra-ui/react";
 import React, { forwardRef, SyntheticEvent, useMemo } from "react";
 import { Task } from "../api/task";
-import { UseTasksResult } from "../hooks/useTasks";
+import { useTasksOperator } from "../contexts/TasksContext";
 import { TaskCheckBox } from "./TaskCheckBox";
 
 export type TaskItemBaseProps = {
   className?: string;
   task: Task;
-  onDeleteTask: UseTasksResult["deleteTask"];
   checked: boolean;
   onChangeChecked: (checked: boolean) => void;
 };
 
 const Component = forwardRef<HTMLDivElement, TaskItemBaseProps>(
-  ({ className, task, onDeleteTask, checked, onChangeChecked }, ref) => {
+  ({ className, task, checked, onChangeChecked }, ref) => {
+    const { deleteTask } = useTasksOperator();
+
     const title = useMemo(() => {
       if (task.isDone) {
         return <del>{task.title}</del>;
@@ -29,7 +30,7 @@ const Component = forwardRef<HTMLDivElement, TaskItemBaseProps>(
 
     const handleClickCloseButton = (e: SyntheticEvent) => {
       e.stopPropagation();
-      onDeleteTask({ id: task.id });
+      deleteTask({ id: task.id });
     };
 
     return (

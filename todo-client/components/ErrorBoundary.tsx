@@ -1,13 +1,13 @@
 import { useToast } from "@chakra-ui/react";
 import React, { useEffect } from "react";
-import { UseTasksError } from "../hooks/useTasks";
+import { useTasksState } from "../contexts/TasksContext";
 
 type Props = {
   children: React.ReactNode;
-  error: UseTasksError | undefined;
 };
 
-const Component: React.VFC<Props> = ({ children, error }) => {
+const Component: React.VFC<Props> = ({ children }) => {
+  const { error } = useTasksState();
   const toast = useToast();
 
   useEffect(() => {

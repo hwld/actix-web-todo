@@ -1,8 +1,9 @@
 import { useDisclosure } from "@chakra-ui/hooks";
 import { chakra } from "@chakra-ui/react";
 import React, { forwardRef, useState } from "react";
+import { Task } from "../api/task";
+import { useTasksOperator } from "../contexts/TasksContext";
 import { TaskFontSize } from "../hooks/useTaskFontSize";
-import { UseTasksResult } from "../hooks/useTasks";
 import {
   ChangeFontSizeDialog,
   ChangeFontSizeDialogProps,
@@ -10,27 +11,17 @@ import {
 import { TaskItemBase, TaskItemBaseProps } from "./TaskItemBase";
 
 // TaskItemBasePropsのonChangeCheckedはコンポーネントの内側で作成する。
-export type ChangeFontSizeTodoItemProps = Omit<
-  TaskItemBaseProps,
-  "onChangeChecked" | "checked"
-> & {
+export type ChangeFontSizeTodoItemProps = {
+  className?: string;
+  task: Task;
   defaultFontSize: ChangeFontSizeDialogProps["defaultFontSize"];
   onChangeFontSize: ChangeFontSizeDialogProps["onChangeFontSize"];
-  onUpdateTodo: UseTasksResult["updateTask"];
 };
 
 const Component = forwardRef<HTMLDivElement, ChangeFontSizeTodoItemProps>(
-  (
-    {
-      className,
-      task,
-      onDeleteTask,
-      onUpdateTodo,
-      defaultFontSize,
-      onChangeFontSize,
-    },
-    ref
-  ) => {
+  ({ className, task, defaultFontSize, onChangeFontSize }, ref) => {
+    const { deleteTask, updateTask } = useTasksOperator();
+
     const [isChecked, setIsChecked] = useState(false);
     const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -46,11 +37,11 @@ const Component = forwardRef<HTMLDivElement, ChangeFontSizeTodoItemProps>(
       setIsChecked(true);
       onChangeFontSize(fontSize);
 
-      const result = await onUpdateTodo({ id: task.id, isDone: true });
+      const result = await updateTask({ id: task.id, isDone: true });
       if (result === "Error") {
         setIsChecked(false);
       }
-      onDeleteTask({ id: task.id });
+      deleteTask({ id: task.id });
     };
 
     return (
@@ -59,7 +50,6 @@ const Component = forwardRef<HTMLDivElement, ChangeFontSizeTodoItemProps>(
           ref={ref}
           className={className}
           task={task}
-          onDeleteTask={onDeleteTask}
           checked={isChecked}
           onChangeChecked={handleChangeChecked}
         />

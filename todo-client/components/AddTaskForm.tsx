@@ -8,14 +8,14 @@ import {
   VisuallyHidden,
 } from "@chakra-ui/react";
 import React, { ChangeEvent, SyntheticEvent, useState } from "react";
-import { CreateTaskRequest } from "../api/task";
+import { useTasksOperator } from "../contexts/TasksContext";
 
 type Props = {
   className?: string;
-  onAddTask: (req: CreateTaskRequest) => void;
 };
 
-const Component: React.VFC<Props> = ({ className, onAddTask }) => {
+const Component: React.VFC<Props> = ({ className }) => {
+  const { addTask } = useTasksOperator();
   const [title, setTitle] = useState("");
 
   const handleChangeTitle = (e: ChangeEvent<HTMLInputElement>) => {
@@ -25,7 +25,7 @@ const Component: React.VFC<Props> = ({ className, onAddTask }) => {
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
     setTitle("");
-    onAddTask({ title });
+    addTask({ title });
   };
 
   return (
