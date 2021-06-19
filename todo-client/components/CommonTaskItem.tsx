@@ -11,7 +11,7 @@ export type CommonTaskItemProps = {
 
 const Component = forwardRef<HTMLDivElement, CommonTaskItemProps>(
   ({ className, task }, ref) => {
-    const { updateTask } = useTasksOperator();
+    const { updateTask, deleteTask } = useTasksOperator();
 
     const [isChecked, setIsChecked] = useState(task.isDone);
 
@@ -30,6 +30,7 @@ const Component = forwardRef<HTMLDivElement, CommonTaskItemProps>(
         task={task}
         checked={isChecked}
         onChangeChecked={handleChangeChecked}
+        onDeleteTask={deleteTask}
       />
     );
   }

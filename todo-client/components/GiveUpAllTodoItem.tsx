@@ -11,7 +11,7 @@ export type GiveUpAllTodoItemProps = { className?: string; task: Task };
 const Component = forwardRef<HTMLDivElement, GiveUpAllTodoItemProps>(
   ({ className, task }, ref) => {
     const { todos: allTodos } = useTasksState();
-    const { deleteMultipleTasks, updateTask } = useTasksOperator();
+    const { deleteTask, deleteMultipleTasks, updateTask } = useTasksOperator();
 
     const [isChecked, setIsChecked] = useState(false);
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -43,6 +43,7 @@ const Component = forwardRef<HTMLDivElement, GiveUpAllTodoItemProps>(
           task={task}
           checked={isChecked}
           onChangeChecked={handleChangeChecked}
+          onDeleteTask={deleteTask}
         />
         <GiveUpDialog
           isOpen={isOpen}

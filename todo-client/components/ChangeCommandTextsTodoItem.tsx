@@ -53,6 +53,7 @@ const Component = forwardRef<HTMLDivElement, ChangeCommandTextsTodoItemProps>(
           task={task}
           checked={isChecked}
           onChangeChecked={handleChangeChecked}
+          onDeleteTask={deleteTask}
         />
         <ChangeCommandTextsDialog
           isOpen={isOpen}

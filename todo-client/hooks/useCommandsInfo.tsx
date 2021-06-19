@@ -143,8 +143,6 @@ export const useCommandInfos = (): useCommandsInfoResult => {
     }
 
     internalSetCommandsInfo(commandsInfo);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {

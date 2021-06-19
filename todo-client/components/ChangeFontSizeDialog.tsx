@@ -13,7 +13,10 @@ import {
   Text,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { extractNumberPart, TaskFontSize } from "../hooks/useTaskFontSize";
+import {
+  extractNumberPart,
+  TaskFontSize,
+} from "../contexts/TaskFontSizeContext";
 
 export type ChangeFontSizeDialogProps = {
   isOpen: boolean;

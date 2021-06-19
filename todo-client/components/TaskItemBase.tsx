@@ -1,7 +1,7 @@
 import { Box, chakra, CloseButton, Flex, Text } from "@chakra-ui/react";
 import React, { forwardRef, SyntheticEvent, useMemo } from "react";
-import { Task } from "../api/task";
-import { useTasksOperator } from "../contexts/TasksContext";
+import { DeleteTaskRequest, Task } from "../api/task";
+import { useTaskFontSize } from "../contexts/TaskFontSizeContext";
 import { TaskCheckBox } from "./TaskCheckBox";
 
 export type TaskItemBaseProps = {
@@ -9,11 +9,12 @@ export type TaskItemBaseProps = {
   task: Task;
   checked: boolean;
   onChangeChecked: (checked: boolean) => void;
+  onDeleteTask: (req: DeleteTaskRequest) => void;
 };
 
 const Component = forwardRef<HTMLDivElement, TaskItemBaseProps>(
-  ({ className, task, checked, onChangeChecked }, ref) => {
-    const { deleteTask } = useTasksOperator();
+  ({ className, task, checked, onChangeChecked, onDeleteTask }, ref) => {
+    const taskFontSize = useTaskFontSize();
 
     const title = useMemo(() => {
       if (task.isDone) {
@@ -30,7 +31,7 @@ const Component = forwardRef<HTMLDivElement, TaskItemBaseProps>(
 
     const handleClickCloseButton = (e: SyntheticEvent) => {
       e.stopPropagation();
-      deleteTask({ id: task.id });
+      onDeleteTask({ id: task.id });
     };
 
     return (
@@ -44,6 +45,7 @@ const Component = forwardRef<HTMLDivElement, TaskItemBaseProps>(
         borderRadius="10px"
         w="100%"
         h="100%"
+        fontSize={`${taskFontSize}`}
       >
         <Box ref={ref} />
         <TaskCheckBox

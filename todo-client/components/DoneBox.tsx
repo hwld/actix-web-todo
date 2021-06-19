@@ -16,13 +16,11 @@ import styled from "@emotion/styled";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
 import { useTasksOperator, useTasksState } from "../contexts/TasksContext";
-import { TaskFontSize } from "../hooks/useTaskFontSize";
 import { DoneBoxIcon } from "./DoneBoxIcon";
 import { DoneItem } from "./DoneItem";
 
 type Props = {
   className?: string;
-  taskFontSize: TaskFontSize;
 };
 
 const IconButton = styled(ChakraIconButton)`
@@ -32,7 +30,7 @@ const IconButton = styled(ChakraIconButton)`
   }
 `;
 
-const Component: React.VFC<Props> = ({ className, taskFontSize }) => {
+const Component: React.VFC<Props> = ({ className }) => {
   const { dones } = useTasksState();
   const { deleteMultipleTasks } = useTasksOperator();
 
@@ -74,7 +72,6 @@ const Component: React.VFC<Props> = ({ className, taskFontSize }) => {
                     key={done.id}
                     done={done}
                     initial={{ x: 0 }}
-                    fontSize={`${taskFontSize}`}
                     layout
                     exit={{ x: "-300px", opacity: 0 }}
                   />

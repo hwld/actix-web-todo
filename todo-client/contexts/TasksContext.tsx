@@ -175,14 +175,14 @@ const useTasks = (taskAPI: TaskAPI): [TasksState, TasksOperator] => {
   ];
 };
 
-export const TasksStateContext = createContext<TasksState>({
+const TasksStateContext = createContext<TasksState>({
   todos: [],
   dones: [],
   error: undefined,
 });
 
 const noop = async () => "Error" as const;
-export const TasksOperatorContext = createContext<TasksOperator>({
+const TasksOperatorContext = createContext<TasksOperator>({
   addTask: noop,
   deleteTask: noop,
   deleteMultipleTasks: noop,

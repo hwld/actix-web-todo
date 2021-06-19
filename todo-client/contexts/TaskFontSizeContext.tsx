@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { useContext } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
 
 const TASK_FONT_SIZE_UNIT = "rem";
 
 export type TaskFontSize = `${number}${typeof TASK_FONT_SIZE_UNIT}`;
+export type TaskFonTSizeUpdate = (size: TaskFontSize) => void;
 
 function isTaskFontSize(value: string): value is TaskFontSize {
   const numberPart = value.substring(
@@ -32,7 +34,7 @@ export function extractNumberPart(fontSize: TaskFontSize): number {
   return numberPart;
 }
 
-export const useTaskFontSize = (): [
+const useTaskFontSizeState = (): [
   TaskFontSize,
   (fontSize: TaskFontSize) => void
 ] => {
@@ -52,8 +54,34 @@ export const useTaskFontSize = (): [
     }
 
     setTaskFontSize(fontSize);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setTaskFontSize]);
 
   return [taskFontSize, setTaskFontSize];
+};
+
+export const TaskFontSizeContext = createContext<TaskFontSize>("1rem");
+export const TaskFontSizeUpdateContext = createContext<TaskFonTSizeUpdate>(
+  () => {
+    // noop
+  }
+);
+
+export const TaskFontSizeProvider: React.FC = ({ children }) => {
+  const [taskFontSize, setTaskFontSize] = useTaskFontSizeState();
+
+  return (
+    <TaskFontSizeContext.Provider value={taskFontSize}>
+      <TaskFontSizeUpdateContext.Provider value={setTaskFontSize}>
+        {children}
+      </TaskFontSizeUpdateContext.Provider>
+    </TaskFontSizeContext.Provider>
+  );
+};
+
+export const useTaskFontSize = (): TaskFontSize => {
+  return useContext(TaskFontSizeContext);
+};
+
+export const useTaskFontSizeUpdate = (): TaskFonTSizeUpdate => {
+  return useContext(TaskFontSizeUpdateContext);
 };

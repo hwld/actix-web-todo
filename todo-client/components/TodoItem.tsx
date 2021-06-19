@@ -3,7 +3,6 @@ import { motion, MotionProps } from "framer-motion";
 import React, { forwardRef } from "react";
 import { Todo } from "../api/task";
 import { Command, CommandInfo } from "../hooks/useCommandsInfo";
-import { TaskFontSize } from "../hooks/useTaskFontSize";
 import {
   ChangeCommandTextsTodoItem,
   ChangeCommandTextsTodoItemProps,
@@ -17,7 +16,6 @@ import { GiveUpAllTodoItem, GiveUpAllTodoItemProps } from "./GiveUpAllTodoItem";
 
 type Props = {
   todo: Todo;
-  todoFontSize: TaskFontSize;
   commandInfos: CommandInfo[];
   getCommandText: (command: Command) => string;
 } & Omit<
@@ -30,11 +28,9 @@ type Props = {
 
 const Component = forwardRef<HTMLDivElement, Props>(
   (
-    { className, todoFontSize, commandInfos, getCommandText, ...others },
+    { className, commandInfos, getCommandText, todo, onChangeCommandTexts },
     ref
   ) => {
-    const { todo, onChangeFontSize, onChangeCommandTexts } = others;
-
     switch (todo.title) {
       case `\`${getCommandText("giveUpAll")}\``: {
         return (
@@ -42,8 +38,6 @@ const Component = forwardRef<HTMLDivElement, Props>(
             ref={ref}
             className={className}
             task={todo}
-            // 直接渡せない
-            fontSize={`${todoFontSize}`}
             bgColor="blue.600"
           />
         );
@@ -53,10 +47,7 @@ const Component = forwardRef<HTMLDivElement, Props>(
           <ChangeFontSizeTodoItem
             ref={ref}
             className={className}
-            defaultFontSize={todoFontSize}
             task={todo}
-            onChangeFontSize={onChangeFontSize}
-            fontSize={`${todoFontSize}`}
             bgColor="blue.600"
           />
         );
@@ -69,20 +60,12 @@ const Component = forwardRef<HTMLDivElement, Props>(
             task={todo}
             defaultCommandInfos={commandInfos}
             onChangeCommandTexts={onChangeCommandTexts}
-            fontSize={`${todoFontSize}`}
             bgColor="blue.600"
           />
         );
       }
       default: {
-        return (
-          <CommonTaskItem
-            ref={ref}
-            className={className}
-            task={todo}
-            fontSize={`${todoFontSize}`}
-          />
-        );
+        return <CommonTaskItem ref={ref} className={className} task={todo} />;
       }
     }
   }
