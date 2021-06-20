@@ -59,7 +59,7 @@ function isAllCommandsInfo(value: unknown): value is AllCommandsInfo {
   );
 }
 
-type useCommandsInfoResult = {
+export type UseCommandInfosResult = {
   commandInfoList: CommandInfo[];
   changeCommandTexts: (
     commandTexts: Pick<CommandInfo, "command" | "text">[]
@@ -67,7 +67,7 @@ type useCommandsInfoResult = {
   getCommandText: (command: Command) => string;
 };
 
-export const useCommandInfos = (): useCommandsInfoResult => {
+export const useCommandInfos = (): UseCommandInfosResult => {
   const key = "commandsInfo";
   const [commandsInfo, internalSetCommandsInfo] = useState<AllCommandsInfo>({
     giveUpAll: {

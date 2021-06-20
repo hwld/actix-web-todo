@@ -2,20 +2,22 @@ import { VStack } from "@chakra-ui/react";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
 import { Todo } from "../api/task";
-import { useCommandInfos } from "../hooks/useCommandsInfo";
+import { UseCommandInfosResult } from "../hooks/useCommandsInfo";
 import { TodoItem } from "./TodoItem";
 
 type Props = {
   todos: Todo[];
+  commandInfoList: UseCommandInfosResult["commandInfoList"];
+  changeCommandTexts: UseCommandInfosResult["changeCommandTexts"];
+  getCommandText: UseCommandInfosResult["getCommandText"];
 };
 
-const Component: React.FC<Props> = ({ todos }) => {
-  const {
-    commandInfoList,
-    changeCommandTexts,
-    getCommandText,
-  } = useCommandInfos();
-
+const Component: React.FC<Props> = ({
+  todos,
+  commandInfoList,
+  changeCommandTexts,
+  getCommandText,
+}) => {
   return (
     <VStack
       mt={{ base: 6, lg: 12 }}
