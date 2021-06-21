@@ -3,14 +3,14 @@ import React from "react";
 import { AddTaskForm } from "../components/AddTaskForm";
 import { DisplayCommandButton } from "../components/DisplayCommandButton";
 import { DoneBox } from "../components/DoneBox";
-import { ErrorBoundary } from "../components/ErrorBoundary";
+import { ErrorAlert } from "../components/ErrorAlert";
 import { Header } from "../components/Header";
 import { TodoList } from "../components/TodoList";
 import { useTasksState } from "../contexts/TasksContext";
 import { useCommandInfos } from "../hooks/useCommandsInfo";
 
 const Home: NextPage = () => {
-  const { todos } = useTasksState();
+  const { todos, error } = useTasksState();
   const {
     commandInfoList,
     changeCommandTexts,
@@ -18,7 +18,9 @@ const Home: NextPage = () => {
   } = useCommandInfos();
 
   return (
-    <ErrorBoundary>
+    <>
+      <ErrorAlert error={error} />
+
       <Header mx="auto" bg="gray.900" />
       <AddTaskForm position="sticky" top="0" bg="gray.900" zIndex={1} />
 
@@ -42,7 +44,7 @@ const Home: NextPage = () => {
         bottom={{ base: "20px", lg: "50px" }}
         boxSize="50px"
       />
-    </ErrorBoundary>
+    </>
   );
 };
 
