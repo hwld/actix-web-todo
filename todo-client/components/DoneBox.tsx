@@ -1,7 +1,7 @@
 import {
   Button,
   chakra,
-  IconButton as ChakraIconButton,
+  IconButton,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -12,7 +12,6 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import styled from "@emotion/styled";
 import { AnimatePresence } from "framer-motion";
 import React from "react";
 import { useTasksOperator, useTasksState } from "../contexts/TasksContext";
@@ -22,13 +21,6 @@ import { DoneItem } from "./DoneItem";
 type Props = {
   className?: string;
 };
-
-const IconButton = styled(ChakraIconButton)`
-  & > svg {
-    width: 60%;
-    height: auto;
-  }
-`;
 
 const Component: React.VFC<Props> = ({ className }) => {
   const { dones } = useTasksState();
@@ -47,7 +39,11 @@ const Component: React.VFC<Props> = ({ className }) => {
         colorScheme="blue"
         boxSize="100px"
         borderRadius="50%"
-        icon={<DoneBoxIcon>{dones.length}</DoneBoxIcon>}
+        icon={
+          <DoneBoxIcon w="60%" h="auto">
+            {dones.length}
+          </DoneBoxIcon>
+        }
         onClick={onOpen}
       />
       <Modal isOpen={isOpen} onClose={onClose}>

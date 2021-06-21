@@ -2,12 +2,12 @@ import { chakra } from "@chakra-ui/react";
 import React from "react";
 import { MdPlaylistAddCheck } from "react-icons/md";
 
-type Props = { children: React.ReactNode };
+type Props = { children: React.ReactNode; className?: string };
 
-const Component: React.VFC<Props> = ({ children }) => {
+const Component: React.VFC<Props> = ({ children, className }) => {
   return (
     <>
-      <MdPlaylistAddCheck />
+      <MdPlaylistAddCheck className={className} />
       <chakra.span
         pos="absolute"
         top="0"
@@ -27,4 +27,4 @@ const Component: React.VFC<Props> = ({ children }) => {
   );
 };
 
-export const DoneBoxIcon = Component;
+export const DoneBoxIcon = chakra(Component);

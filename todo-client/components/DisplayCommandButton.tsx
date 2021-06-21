@@ -3,7 +3,7 @@ import {
   Button,
   chakra,
   Heading,
-  IconButton as ChakraIconButton,
+  IconButton,
   Modal,
   ModalBody,
   ModalContent,
@@ -15,16 +15,8 @@ import {
   Text,
   Box,
 } from "@chakra-ui/react";
-import styled from "@emotion/styled";
 import React from "react";
 import { CommandInfo } from "../hooks/useCommandsInfo";
-
-const IconButton = styled(ChakraIconButton)`
-  & > svg {
-    width: 100%;
-    height: auto;
-  }
-`;
 
 type Props = { className?: string; commandInfos: CommandInfo[] };
 
@@ -36,7 +28,7 @@ const Component: React.FC<Props> = ({ className, commandInfos }) => {
       <IconButton
         className={className}
         aria-label="display commands"
-        icon={<QuestionIcon />}
+        icon={<QuestionIcon w="100%" h="auto" />}
         backgroundColor="transparent"
         color="yellow.200"
         _hover={{ color: "yellow.300" }}
