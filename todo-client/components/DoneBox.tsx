@@ -9,6 +9,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Tooltip,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
@@ -34,19 +35,21 @@ const Component: React.VFC<Props> = ({ className }) => {
 
   return (
     <chakra.span className={className}>
-      <IconButton
-        aria-label="checked task"
-        colorScheme="blue"
-        boxSize="100px"
-        borderRadius="50%"
-        icon={
-          <DoneBoxIcon w="60%" h="auto">
-            {dones.length}
-          </DoneBoxIcon>
-        }
-        onClick={onOpen}
-      />
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Tooltip label="完了したタスクを表示する" hasArrow>
+        <IconButton
+          aria-label="checked task"
+          colorScheme="blue"
+          boxSize="100px"
+          borderRadius="50%"
+          icon={
+            <DoneBoxIcon w="60%" h="auto">
+              {dones.length}
+            </DoneBoxIcon>
+          }
+          onClick={onOpen}
+        />
+      </Tooltip>
+      <Modal isOpen={isOpen} onClose={onClose} returnFocusOnClose={false}>
         <ModalOverlay />
         <ModalContent
           position="fixed"
